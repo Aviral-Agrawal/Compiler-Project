@@ -1,0 +1,30 @@
+% Group 40
+% Compiler Construction CS-F363
+% Aviral Agrawal 2016A7PS0077P
+% Jitvan Shukla 2016A7PS0083P
+% Shubham Sharma 2016A7PS0115P
+% Akshit Agarwal 2016A7PS0122P
+
+%Test Case 1
+% Following returns the square of the user defined integer.
+
+_squareN input parameter list [int d2d]
+output parameter list[int b2cd];
+
+% Now writing the logic
+        b2cd <--- d2d * d2d;
+        return [b2cd];
+end
+
+%==============================Main Function====================================
+_main
+    %The input variable
+    type int : c3db2;
+    read(c3db2);
+    %The result carrying variable
+    type int : d2bd27;
+    [d2bd27] <--- call _squareN with parameters [c3db2];
+    write(d2bd27);
+    return;
+
+end

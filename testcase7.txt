@@ -1,0 +1,51 @@
+% Group 40
+% Compiler Construction CS-F363
+% Aviral Agrawal 2016A7PS0077P
+% Jitvan Shukla 2016A7PS0083P
+% Shubham Sharma 2016A7PS0115P
+% Akshit Agarwal 2016A7PS0122P
+
+%Test Case 3
+% Computes the BMI of the user defined number of persons
+
+_getBMI input parameter list [record #data d2d]
+output parameter list[real b2cd];
+
+% Now writing the logic
+        b2cd <--- d2d.weight/d2d.height;
+        b2cd <--- b2cd/d2d.height;
+        return [b2cd];
+end
+
+%==============================Main Function====================================
+_main
+
+    record #data
+        type real: weight;
+        type real: height;
+    endrecord;
+
+    %Weight is entered in kilograms up to two decimal places.
+    %Height is entered in meters up to two decimal places.
+
+    %No. of persons for whom the data is being entered
+    type int : c3db2;
+    read(c3db2);
+
+    type record #data: d4;
+    type real : c2c34;
+    %result variable
+    type int : b5;
+    b5 <--- 1;
+
+    while(b5<=c3db2)
+        read(d4.weight);
+        read(d4.height);
+        [c2c34] <--- call _getBMI with parameters[d4];
+        write(c2c34);
+        %Incrementing the Counter
+        b5 <--- b5+1;
+    endwhile
+
+    return;
+end
