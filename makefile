@@ -1,8 +1,14 @@
 compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o  driver.o
 	gcc -g  -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o driver.o
 
+compileLexer : lexer.o
+	gcc -g -o lexerexe lexer.o
+
 run :
 	./stage1exe
+
+remove :
+	rm *.o *.gch exe
 
 debug :
 	gdb stage1exe

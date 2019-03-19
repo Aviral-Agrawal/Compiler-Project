@@ -353,13 +353,13 @@ void printHashTable(hashTable* ht)
 char* temp = NULL;
 char* getStream(FILE* fp)
 {
-    char* buff;
+    char* buff = NULL;
     char deli;
-    buff=(char*)malloc(sizeof(char)*512);
+    buff = (char*) malloc(sizeof(char)*512);
     buff[0] = '\0';
     int i;
-    char* production;
-    production=(char*)malloc(sizeof(char)*512);
+    char* production = NULL;
+    production = (char*) malloc(sizeof(char)*512);
 
     if(temp!=NULL && strlen(temp)!=0)
     {
@@ -391,7 +391,10 @@ char* getStream(FILE* fp)
     if(temp==NULL)
         temp=(char*)malloc(sizeof(char)*512);
     if((strlen(buff) + strlen(production))>512)
+    {
         strcpy(temp,production);
+        free(production);
+    }
     return buff;
 }
 
@@ -727,6 +730,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                         break;
                     case '\0':
                         buffPos = 0;
+                        // free(BUFF);
                         BUFF = getStream(fp);
                         state = 0;
                         break;
@@ -1361,6 +1365,7 @@ void printTokenInfile(FILE* fp, keyTable* kt, hashTable* ht)
     fclose(fpout);
     fclose(fp2);
 }
+
 int stringToInt(tokenInfo *tk)
 {
     int val =0;
@@ -1385,19 +1390,25 @@ void printNum(tokenInfo* tk)
     }
 }//end of the function
 //
-// int main()
-// {
-//     keyTable* kt = newKeywordTable();
-//     hashTable* ht = newHashTable(INIT_SYM_TAB_LEN);
-//     populateKeyword(kt);
-//     FILE* fp = fopen("./testcases/testcase4.txt", "r");
-//     if(fp == NULL)
-//     {
-//         printf("Input file not found!!\n");
-//         return -1;
-//     }
-//     // int inputSize = strlen(BUFF);
-//     printTokenInfile(fp, kt, ht);
-//     fclose(fp);
-//     return 0;
-// }
+
+int main(int argc, char* argv[])
+{
+    if(argc < 2)
+    {
+        printf("Insufficient number of arguments!!\n");
+        return -1;
+    }
+    keyTable* kt = newKeywordTable();
+    hashTable* ht = newHashTable(INIT_SYM_TAB_LEN);
+    populateKeyword(kt);
+    FILE* fp = fopen(argv[1], "r");
+    if(fp == NULL)
+    {
+        printf("Input file not found!!\n");
+        return -1;
+    }
+    // int inputSize = strlen(BUFF);
+    printTokenInfile(fp, kt, ht);
+    fclose(fp);
+    return 0;
+}
