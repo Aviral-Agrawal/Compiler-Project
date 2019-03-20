@@ -353,13 +353,13 @@ void printHashTable(hashTable* ht)
 char* temp = NULL;
 char* getStream(FILE* fp)
 {
-    char* buff;
+    char* buff = NULL;
     char deli;
-    buff=(char*)malloc(sizeof(char)*512);
+    buff = (char*) malloc(sizeof(char)*512);
     buff[0] = '\0';
     int i;
-    char* production;
-    production=(char*)malloc(sizeof(char)*512);
+    char* production = NULL;
+    production = (char*) malloc(sizeof(char)*512);
 
     if(temp!=NULL && strlen(temp)!=0)
     {
@@ -391,7 +391,10 @@ char* getStream(FILE* fp)
     if(temp==NULL)
         temp=(char*)malloc(sizeof(char)*512);
     if((strlen(buff) + strlen(production))>512)
+    {
         strcpy(temp,production);
+        free(production);
+    }
     return buff;
 }
 

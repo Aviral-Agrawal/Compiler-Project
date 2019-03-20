@@ -128,7 +128,7 @@ void insertFirst(grammar *gmr, char *keyword)
     //If the first set of the non-terminal is
     //being called for the first time
     //printf("%s\n",keyword);
-    if(gmr->ftsa==NULL)
+    if(gmr->ftsa==NULL || gmr->ftsa->firstSet==NULL)
     {
         gmr->ftsa=(firstSetArray *)malloc(sizeof(firstSetArray));
         gmr->ftsa->firstSet=(ft *)malloc(sizeof(ft)*MAX_FIRST_SIZE);
@@ -205,6 +205,32 @@ void insertFirstHelper(grammar *gmr, ruleHead *rh, char *keyword, int flag){
           {
             if(rh->next!=NULL)
               insertFirstHelper(gmr,rh->next,keyword,1);
+            else
+            {
+              ft *newElement1=(ft *)malloc(sizeof(ft));
+              strcpy(newElement1->terminal,cur->terminal);
+              newElement1->next=NULL;
+
+              int check = 0;
+              if(start1->terminal[0]=='\0')
+              {
+                  strcpy(start1->terminal,cur->terminal);
+              }
+              else
+              {
+                  while(start1->next!=NULL)
+                  {
+                    if(strcmp(start1->terminal,newElement1->terminal)==0)
+                        check=1;
+                    start1=start1->next;
+                    }
+                    if(strcmp(start1->terminal,newElement1->terminal)==0)
+                        check=1;
+                  if(!check)
+                    start1->next=newElement1;
+              }
+            }
+            return;
           }
           ft *newElement1=(ft *)malloc(sizeof(ft));
           strcpy(newElement1->terminal,cur->terminal);
@@ -261,7 +287,7 @@ fl* getFollow(grammar *gmr, char* keyword)
 void insertFollow(grammar *gmr, char* keyword)
 {
     //Memory Allocation (if not already allocated)
-    if(gmr->flsa==NULL)//Also puts dollar in the follow of the start symbol
+    if(gmr->flsa==NULL || gmr->flsa->followSet==NULL)//Also puts dollar in the follow of the start symbol
     {
         gmr->flsa = (followSetArray*) malloc(sizeof(followSetArray));
         gmr->flsa->followSet = (fl*) malloc(sizeof(fl)*MAX_FOLLOW_SIZE);
