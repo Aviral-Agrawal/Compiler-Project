@@ -356,10 +356,11 @@ char* getStream(FILE* fp)
     char* buff = NULL;
     char deli;
     buff = (char*) malloc(sizeof(char)*512);
-    buff[0] = '\0';
+    memset(buff, '\0', sizeof(char)*512);
     int i;
     char* production = NULL;
     production = (char*) malloc(sizeof(char)*512);
+    memset(production, '\0', sizeof(char)*512);
 
     if(temp!=NULL && strlen(temp)!=0)
     {
@@ -375,20 +376,15 @@ char* getStream(FILE* fp)
             strcat(buff,production);
             strcat(buff,"\n");
         }
-        else
-        {
-            if(temp==NULL)
-                temp=(char*)malloc(sizeof(char)*512);
-            strcpy(temp,production);
-        }
-        if(production != NULL)
-              free(production);
-        production=(char*)malloc(sizeof(char)*512);
-        production[0] = '\0';
+        memset(production, '\0', sizeof(char)*512);
         fscanf(fp,"%c",&deli);
-    }
+    }//end of while loop
+
     if(temp==NULL)
+    {
         temp=(char*)malloc(sizeof(char)*512);
+        memset(temp, '\0', sizeof(char)*512);
+    }
     if((strlen(buff) + strlen(production))>512)
     {
         strcpy(temp,production);
@@ -1353,7 +1349,7 @@ void printTokenInfile(FILE* fp, keyTable* kt, hashTable* ht)
         getNextToken(t, kt, ht, fp,fp2);
         // fprintf(fp, "<%s>", enumToString(t->tkType));
 
-        if(BUFF[0] == '\0')
+        if(BUFF[0] == '\0' || t->tkType == TK_DOLLAR)
         {
            // printf("<%s>\n", "TK_DOLLAR");//Integrate this in fprintf
             break;
