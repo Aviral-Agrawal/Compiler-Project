@@ -1391,24 +1391,24 @@ void printNum(tokenInfo* tk)
 }//end of the function
 //
 
-int main(int argc, char* argv[])
-{
-    if(argc < 2)
-    {
-        printf("Insufficient number of arguments!!\n");
-        return -1;
-    }
-    keyTable* kt = newKeywordTable();
-    hashTable* ht = newHashTable(INIT_SYM_TAB_LEN);
-    populateKeyword(kt);
-    FILE* fp = fopen(argv[1], "r");
-    if(fp == NULL)
-    {
-        printf("Input file not found!!\n");
-        return -1;
-    }
-    // int inputSize = strlen(BUFF);
-    printTokenInfile(fp, kt, ht);
-    fclose(fp);
-    return 0;
-}
+// int main(int argc, char* argv[])
+// {
+//     if(argc < 2)
+//     {
+//         printf("Insufficient number of arguments!!\n");
+//         return -1;
+//     }
+//     keyTable* kt = newKeywordTable();
+//     hashTable* ht = newHashTable(INIT_SYM_TAB_LEN);
+//     populateKeyword(kt);
+//     FILE* fp = fopen(argv[1], "r");
+//     if(fp == NULL)
+//     {
+//         printf("Input file not found!!\n");
+//         return -1;
+//     }
+//     // int inputSize = strlen(BUFF);
+//     printTokenInfile(fp, kt, ht);
+//     fclose(fp);
+//     return 0;
+// }
