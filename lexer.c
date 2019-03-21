@@ -387,7 +387,6 @@ char* getStream(FILE* fp)
         production[0] = '\0';
         fscanf(fp,"%c",&deli);
     }
-    // printf("%ld\n",strlen(buff)); // why is this showing 513 ? I WANT AN ANSWER AVIRAL
     if(temp==NULL)
         temp=(char*)malloc(sizeof(char)*512);
     if((strlen(buff) + strlen(production))>512)
@@ -566,6 +565,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
         if(BUFF[0] == '\0')
         {
             t->tkType = TK_DOLLAR;
+            curLine = 1;
             return;
         }
         char ch = BUFF[buffPos++];
@@ -730,7 +730,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                         break;
                     case '\0':
                         buffPos = 0;
-                        // free(BUFF);
+                        free(BUFF);
                         BUFF = getStream(fp);
                         state = 0;
                         break;

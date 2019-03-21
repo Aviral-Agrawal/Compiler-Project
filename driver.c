@@ -256,6 +256,7 @@ int main(int argc, char *argv[]) {
             printTime(argv[1],argv[2]);
 		printf("Entered option %d done!!\n",t);
 		optionPrinter(&t);
+		free(BUFF);
     }
 	if(t==0)
 		printf("Entered 0 : Exiting Successfully!!\n");
