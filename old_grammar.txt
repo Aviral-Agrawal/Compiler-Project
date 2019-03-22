@@ -31,8 +31,8 @@
 <conditionalStmt>===> TK_IF TK_OP <booleanExpression> TK_CL TK_THEN <stmt><otherStmts> <elsePart>
 <elsePart>===>TK_ELSE <stmt><otherStmts> TK_ENDIF | TK_ENDIF
 <ioStmt>===> TK_READ TK_OP <singleOrRecId> TK_CL TK_SEM
-<ioStmt> ===> TK_WRITE TK_OP <allVar> TK_CL TK_SEM
-<allVar>===><var>| TK_RECORDID TK_DOT TK_FIELDID
+<ioStmt> ===> TK_WRITE TK_OP <singleOrRecId> TK_CL TK_SEM
+<allVar>===><var>| TK_ID TK_DOT TK_FIELDID
 <arithmeticExpression> ===> <term> <expPrime>
 <expPrime> ===> <lowPrecedenceOperators> <term> <expPrime> | eps
 <term>===> <factor> <termPrime>
@@ -40,11 +40,11 @@
 <factor> ===> TK_OP <arithmeticExpression> TK_CL | <all>
 <highPrecedenceOperators>===> TK_MUL | TK_DIV
 <lowPrecedenceOperators> ===> TK_PLUS | TK_MINUS
-<all>===> TK_ID | TK_NUM| TK_RNUM | TK_RECORDID <temp>
+<all>===> TK_ID | TK_NUM| TK_RNUM | TK_ID <temp>
 <temp>===> eps | TK_DOT TK_FIELDID
 <booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL
 <booleanExpression>===>  <var> <relationalOp> <var>
-<booleanExpression>===> TK_NOT <booleanExpression>
+<booleanExpression>===> TK_NOT TK_OP <booleanExpression>TK_CL
 <var>===> TK_ID | TK_NUM | TK_RNUM
 <logicalOp>===>TK_AND | TK_OR
 <relationalOp>===> TK_LT | TK_LE | TK_EQ |TK_GT | TK_GE | TK_NE

@@ -38,7 +38,7 @@ char* BUFF;//This is the input buffer
 
 // E-> E+ T
 #define MAX_NON_TERMINAL_LEN 32
-#define TERMINAL_LEN 20
+#define TERMINAL_LEN 50
 
 #define KEYWORD_TABLE_LEN 200
 #define INIT_SYM_TAB_LEN 50

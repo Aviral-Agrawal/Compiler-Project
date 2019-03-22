@@ -233,10 +233,11 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
     //getNextToken(fp,&tkData[tokenCount++]);//VOID return type
     if(tkData[pos].tkType==TK_ERROR)
     {
-        while(!strcmp(peek(stk),"TK_SEM")==0)
+        while(peek(stk)!=NULL && strcmp(peek(stk),"TK_SEM")!=0)
         {
             pop(stk);
         }
+
         pop(stk);
         while(tkData[pos].tkType!=TK_SEM)
             pos++;
@@ -286,7 +287,7 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
           if(tkData[pos].tkType==TK_SEM)
           {
             pos++;
-            while(!strcmp(peek(stk),"TK_SEM"))
+            while(strcmp(peek(stk),"TK_SEM")!=0)
             {
                 pop(stk);
             }
