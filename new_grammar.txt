@@ -60,8 +60,8 @@
 <termPrime>==> eps
 <factor> ===> TK_OP <arithmeticExpression> TK_CL 
 <factor>==> <all>
-<highPrecedenceOperator>===> TK_MUL 
-<highPrecedenceOperator>==> TK_DIV
+<highPrecedenceOperators>===> TK_MUL 
+<highPrecedenceOperators>==> TK_DIV
 <lowPrecedenceOperators> ===> TK_PLUS 
 <lowPrecedenceOperators>==> TK_MINUS
 <all>===> TK_ID 

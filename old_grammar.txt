@@ -38,7 +38,7 @@
 <term>===> <factor> <termPrime>
 <termPrime> ===> <highPrecedenceOperators><factor> <termPrime> | eps
 <factor> ===> TK_OP <arithmeticExpression> TK_CL | <all>
-<highPrecedenceOperator>===> TK_MUL | TK_DIV
+<highPrecedenceOperators>===> TK_MUL | TK_DIV
 <lowPrecedenceOperators> ===> TK_PLUS | TK_MINUS
 <all>===> TK_ID | TK_NUM| TK_RNUM | TK_RECORDID <temp>
 <temp>===> eps | TK_DOT TK_FIELDID

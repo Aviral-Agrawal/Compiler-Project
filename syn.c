@@ -106,6 +106,12 @@ ft* getFirst(grammar *gmr, char* keyword)
         temp1->next=NULL;
         return temp1;
     }
+    if(isEpsilon(keyword)){
+      ft *temp1=(ft *)malloc(sizeof(ft));
+      strcpy(temp1->terminal,keyword);
+      temp1->next=NULL;
+      return temp1;
+    }
 
     int i=0;
     for(;i<gmr->ftsa->count;i++){

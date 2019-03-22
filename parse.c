@@ -212,8 +212,11 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
   hashTable* ht = newHashTable(INIT_SYM_TAB_LEN);
   populateKeyword(kt);
   int i=0;
+  if(BUFF != NULL)
+    free(BUFF);
   BUFF = getStream(fp);
   getNextToken(&tkData[0],kt,ht,fp,fp2);
+  //Getting all the tokens from the input file at once
   while(tkData[i].tkType!=TK_DOLLAR)
   {
     if(i==arraySize-1)
