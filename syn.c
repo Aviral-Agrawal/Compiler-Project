@@ -177,7 +177,7 @@ void insertFirstHelper(grammar *gmr, ruleHead *rh, char *keyword, int flag){
         newElement->next=NULL;
         //Checking if the list is empty for firstSet
         if(start->terminal[0]=='\0')
-            strcpy(start->terminal,rh->nonTermName);
+            strcpy(getFirst(gmr,keyword)->terminal,rh->nonTermName);
         else
         {
           //Flag to check presence of this element in the First
