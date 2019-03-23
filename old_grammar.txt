@@ -40,7 +40,8 @@
 <factor> ===> TK_OP <arithmeticExpression> TK_CL | <all>
 <highPrecedenceOperators>===> TK_MUL | TK_DIV
 <lowPrecedenceOperators> ===> TK_PLUS | TK_MINUS
-<all>===> TK_ID | TK_NUM| TK_RNUM | TK_ID <temp>
+<all>===> TK_ID <B>| TK_NUM| TK_RNUM
+<B>===> <temp>|eps 
 <temp>===> eps | TK_DOT TK_FIELDID
 <booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL
 <booleanExpression>===>  <var> <relationalOp> <var>

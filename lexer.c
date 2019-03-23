@@ -1300,7 +1300,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else if(curLexeme > MAX_FIELD_LEN && t->tkType == TK_FIELDID)
@@ -1309,7 +1309,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else if(curLexeme > MAX_FUN_LEN && t->tkType == TK_FUNID)
@@ -1318,7 +1318,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else
@@ -1326,7 +1326,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     fprintf(fp2,"Line %-4d: Unknown pattern %s\n",t->lineNo,t->lexeme);
                     return;
                 }
