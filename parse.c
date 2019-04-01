@@ -233,7 +233,7 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
   dt->tCount=0;
   genParseTable(gmr,dt);
   //parseHashPrint(ph);
-  treeNode* ast = createTreeNode(gmr->nonTerm[0].nonTermName,NULL);//Abstract Syntax Tree
+  treeNode* ast = createTreeNode(gmr->nonTerm[0].nonTermName,NULL);
   ast->nextSibling = NULL;
   treeNode* child,sibling,temp1;
   treeNode *parent=ast->parent;

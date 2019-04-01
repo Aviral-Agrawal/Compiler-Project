@@ -46,9 +46,14 @@
 #include "gmrCall.h"
 #endif
 
+#ifndef __AST_H__
+#define __AST_H__
+#include "ast.h"
+#endif
+
 #include <time.h>
 
-void printSynToken(char* ch, char* ch1);
+treeNode* printSynToken(char* ch, char* ch1);
 void removeComments(char *testcaseFile)
 {
 	FILE* fp = fopen(testcaseFile, "r");
@@ -138,6 +143,7 @@ void optionPrinter(int* t)
 	printf("Enter 2 : For Invoking Lexer Only\n");
 	printf("Enter 3 : For Invoking Lexer and Parser Both\n");
 	printf("Enter 4 : See the Execution Time\n");
+	printf("Enter 5 : print the AST Tree\n");
 	scanf("%d",t);
 	// fflush(stdin);
 	// fflush(stdout);
@@ -198,7 +204,7 @@ void printLexToken(char* testcaseFile)
 }
 
 
-void printSynToken(char* ch,char* ch1)
+treeNode* printSynToken(char* ch,char* ch1)
 {
 	removeBar("old_grammar.txt");
 	grammar *r=file_open_one_prod("new_grammar.txt");
@@ -220,11 +226,27 @@ void printSynToken(char* ch,char* ch1)
 	   fclose(fp2);
 	   fclose(fp3);
 
-	return ;
+	return tree;
 }
 
+void printAST(char* outfile, treeNode* p_root)
+{
+	astNode* ast_root = (astNode*) malloc(sizeof(astNode));
+	ast_root->keyword = p_root->keyword;
+	ast_root->tk = p_root->tk;
+	ast_root->parent = NULL;
+	ast_root->nextSibling = NULL;
+	ast_root->firstChild = NULL;
+	createAbstractSyntaxTree(ast_root, p_root);
+	FILE* fpout = fopen(outfile, "w");
+	printASTinFile(ast_root, fpout);
+	fclose(fpout);
+	return;
+}
+
+
 int main(int argc, char *argv[]) {
-	if(argc!=3)
+	if(argc!=4)
 		{
 			printf("Error: Too few arguments while executing!!\n");
 			return -1;
@@ -254,6 +276,11 @@ int main(int argc, char *argv[]) {
             printSynToken(argv[1],argv[2]);
         else if(t==4)
             printTime(argv[1],argv[2]);
+		else if(t == 5)
+		{
+			treeNode* p_root = printSynToken(argv[1],argv[2]);
+			printAST(argv[3], p_root);
+		}
 		printf("Entered option %d done!!\n",t);
 		optionPrinter(&t);
 		free(BUFF);
