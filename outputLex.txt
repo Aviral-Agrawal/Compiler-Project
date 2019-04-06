@@ -1,97 +1,205 @@
-<TK_COMMENT          > Line : 1
-<TK_COMMENT          > Line : 2
-<TK_COMMENT          > Line : 3
-<TK_FUNID            > Line : 4
-<TK_INPUT            > Line : 4
-<TK_PARAMETER        > Line : 4
-<TK_LIST             > Line : 4
-<TK_SQL              > Line : 4
-<TK_INT              > Line : 4
-<TK_ID               > Line : 4
-<TK_SQR              > Line : 4
-<TK_OUTPUT           > Line : 5
-<TK_PARAMETER        > Line : 5
-<TK_LIST             > Line : 5
-<TK_SQL              > Line : 5
-<TK_REAL             > Line : 5
-<TK_ID               > Line : 5
-<TK_SQR              > Line : 5
-<TK_SEM              > Line : 5
-<TK_TYPE             > Line : 6
-<TK_INT              > Line : 6
-<TK_COLON            > Line : 6
-<TK_ID               > Line : 6
-<TK_SEM              > Line : 6
-<TK_ID               > Line : 7
-<TK_ASSIGNOP         > Line : 7
-<TK_NUM              > Line : 7
-<TK_SEM              > Line : 7
-<TK_ID               > Line : 8
-<TK_ASSIGNOP         > Line : 8
-<TK_RNUM             > Line : 8
-<TK_SEM              > Line : 8
-<TK_WHILE            > Line : 9
-<TK_OP               > Line : 9
-<TK_ID               > Line : 9
-<TK_LE               > Line : 9
-<TK_ID               > Line : 9
-<TK_CL               > Line : 9
-<TK_READ             > Line : 10
-<TK_OP               > Line : 10
-<TK_ID               > Line : 10
-<TK_CL               > Line : 10
-<TK_SEM              > Line : 10
-<TK_ID               > Line : 11
-<TK_ASSIGNOP         > Line : 11
-<TK_ID               > Line : 11
-<TK_PLUS             > Line : 11
-<TK_ID               > Line : 11
-<TK_SEM              > Line : 11
-<TK_ID               > Line : 12
-<TK_ASSIGNOP         > Line : 12
-<TK_ID               > Line : 12
-<TK_PLUS             > Line : 12
-<TK_NUM              > Line : 12
-<TK_SEM              > Line : 12
-<TK_ENDWHILE         > Line : 13
-<TK_RETURN           > Line : 14
-<TK_SQL              > Line : 14
-<TK_ID               > Line : 14
-<TK_SQR              > Line : 14
-<TK_SEM              > Line : 14
-<TK_END              > Line : 15
-<TK_MAIN             > Line : 17
-<TK_TYPE             > Line : 18
-<TK_INT              > Line : 18
-<TK_COLON            > Line : 18
-<TK_ID               > Line : 18
-<TK_SEM              > Line : 18
-<TK_TYPE             > Line : 19
-<TK_REAL             > Line : 19
-<TK_COLON            > Line : 19
-<TK_ID               > Line : 19
-<TK_SEM              > Line : 19
-<TK_ID               > Line : 20
-<TK_ASSIGNOP         > Line : 20
-<TK_NUM              > Line : 20
-<TK_SEM              > Line : 20
-<TK_SQL              > Line : 21
-<TK_ID               > Line : 21
-<TK_SQR              > Line : 21
-<TK_ASSIGNOP         > Line : 21
-<TK_CALL             > Line : 21
-<TK_FUNID            > Line : 21
-<TK_WITH             > Line : 21
-<TK_PARAMETERS       > Line : 21
-<TK_SQL              > Line : 21
-<TK_ID               > Line : 21
-<TK_SQR              > Line : 21
-<TK_SEM              > Line : 21
-<TK_WRITE            > Line : 22
-<TK_OP               > Line : 22
-<TK_ID               > Line : 22
-<TK_CL               > Line : 22
-<TK_SEM              > Line : 22
-<TK_RETURN           > Line : 23
-<TK_SEM              > Line : 23
-<TK_END              > Line : 24
+         %       TK_COMMENT        Line : 2
+         %       TK_COMMENT        Line : 3
+         %       TK_COMMENT        Line : 5
+         %       TK_COMMENT        Line : 6
+         %       TK_COMMENT        Line : 7
+_readMarks         TK_FUNID        Line : 8
+     input         TK_INPUT        Line : 8
+ parameter       TK_PARAMETER        Line : 8
+      list          TK_LIST        Line : 8
+         [           TK_SQL        Line : 8
+       int           TK_INT        Line : 8
+        b7            TK_ID        Line : 8
+         ]           TK_SQR        Line : 8
+    output        TK_OUTPUT        Line : 9
+ parameter       TK_PARAMETER        Line : 9
+      list          TK_LIST        Line : 9
+         [           TK_SQL        Line : 9
+    record        TK_RECORD        Line : 9
+    #marks       TK_RECORDID        Line : 9
+     b3c45            TK_ID        Line : 9
+         ]           TK_SQR        Line : 9
+         ;           TK_SEM        Line : 9
+      read          TK_READ        Line : 10
+         (            TK_OP        Line : 10
+     b3c45            TK_ID        Line : 10
+         .           TK_DOT        Line : 10
+     maths       TK_FIELDID        Line : 10
+         )            TK_CL        Line : 10
+         ;           TK_SEM        Line : 10
+      read          TK_READ        Line : 11
+         (            TK_OP        Line : 11
+     b3c45            TK_ID        Line : 11
+         .           TK_DOT        Line : 11
+   physics       TK_FIELDID        Line : 11
+         )            TK_CL        Line : 11
+         ;           TK_SEM        Line : 11
+      read          TK_READ        Line : 12
+         (            TK_OP        Line : 12
+     b3c45            TK_ID        Line : 12
+         .           TK_DOT        Line : 12
+ chemistry       TK_FIELDID        Line : 12
+         )            TK_CL        Line : 12
+         ;           TK_SEM        Line : 12
+    return        TK_RETURN        Line : 13
+         [           TK_SQL        Line : 13
+     b3c45            TK_ID        Line : 13
+         ]           TK_SQR        Line : 13
+         ;           TK_SEM        Line : 13
+       end           TK_END        Line : 14
+         %       TK_COMMENT        Line : 15
+         %       TK_COMMENT        Line : 16
+    record        TK_RECORD        Line : 17
+    #marks       TK_RECORDID        Line : 17
+      type          TK_TYPE        Line : 18
+      real          TK_REAL        Line : 18
+         :         TK_COLON        Line : 18
+     maths       TK_FIELDID        Line : 18
+         ;           TK_SEM        Line : 18
+      type          TK_TYPE        Line : 19
+      real          TK_REAL        Line : 19
+         :         TK_COLON        Line : 19
+   physics       TK_FIELDID        Line : 19
+         ;           TK_SEM        Line : 19
+      type          TK_TYPE        Line : 20
+      real          TK_REAL        Line : 20
+         :         TK_COLON        Line : 20
+ chemistry       TK_FIELDID        Line : 20
+         ;           TK_SEM        Line : 20
+ endrecord       TK_ENDRECORD        Line : 21
+         ;           TK_SEM        Line : 21
+         %       TK_COMMENT        Line : 23
+     _main          TK_MAIN        Line : 24
+    record        TK_RECORD        Line : 25
+    #marks       TK_RECORDID        Line : 25
+      type          TK_TYPE        Line : 26
+      real          TK_REAL        Line : 26
+         :         TK_COLON        Line : 26
+     maths       TK_FIELDID        Line : 26
+         ;           TK_SEM        Line : 26
+      type          TK_TYPE        Line : 27
+      real          TK_REAL        Line : 27
+         :         TK_COLON        Line : 27
+   physics       TK_FIELDID        Line : 27
+         ;           TK_SEM        Line : 27
+      type          TK_TYPE        Line : 28
+      real          TK_REAL        Line : 28
+         :         TK_COLON        Line : 28
+ chemistry       TK_FIELDID        Line : 28
+         ;           TK_SEM        Line : 28
+ endrecord       TK_ENDRECORD        Line : 29
+         ;           TK_SEM        Line : 29
+         %       TK_COMMENT        Line : 30
+      type          TK_TYPE        Line : 32
+    record        TK_RECORD        Line : 32
+    #marks       TK_RECORDID        Line : 32
+         :         TK_COLON        Line : 32
+        d4            TK_ID        Line : 32
+         ;           TK_SEM        Line : 32
+         %       TK_COMMENT        Line : 33
+      type          TK_TYPE        Line : 35
+       int           TK_INT        Line : 35
+         :         TK_COLON        Line : 35
+        b5            TK_ID        Line : 35
+         ;           TK_SEM        Line : 35
+      type          TK_TYPE        Line : 36
+       int           TK_INT        Line : 36
+         :         TK_COLON        Line : 36
+ d5cb34567            TK_ID        Line : 36
+         ;           TK_SEM        Line : 36
+      type          TK_TYPE        Line : 37
+    record        TK_RECORD        Line : 37
+    #marks       TK_RECORDID        Line : 37
+         :         TK_COLON        Line : 37
+      b5c6            TK_ID        Line : 37
+         ;           TK_SEM        Line : 37
+         %       TK_COMMENT        Line : 38
+        b5            TK_ID        Line : 40
+      <---       TK_ASSIGNOP        Line : 40
+         1           TK_NUM        Line : 40
+         ;           TK_SEM        Line : 40
+      read          TK_READ        Line : 41
+         (            TK_OP        Line : 41
+ d5cb34567            TK_ID        Line : 41
+         )            TK_CL        Line : 41
+         ;           TK_SEM        Line : 41
+      b5c6            TK_ID        Line : 42
+         .           TK_DOT        Line : 42
+     maths       TK_FIELDID        Line : 42
+      <---       TK_ASSIGNOP        Line : 42
+      0.00          TK_RNUM        Line : 42
+         ;           TK_SEM        Line : 42
+      b5c6            TK_ID        Line : 43
+         .           TK_DOT        Line : 43
+   physics       TK_FIELDID        Line : 43
+      <---       TK_ASSIGNOP        Line : 43
+      0.00          TK_RNUM        Line : 43
+         ;           TK_SEM        Line : 43
+      b5c6            TK_ID        Line : 44
+         .           TK_DOT        Line : 44
+ chemistry       TK_FIELDID        Line : 44
+      <---       TK_ASSIGNOP        Line : 44
+      0.00          TK_RNUM        Line : 44
+         ;           TK_SEM        Line : 44
+     while         TK_WHILE        Line : 45
+         (            TK_OP        Line : 45
+        b5            TK_ID        Line : 45
+        <=            TK_LE        Line : 45
+ d5cb34567            TK_ID        Line : 45
+         )            TK_CL        Line : 45
+         [           TK_SQL        Line : 46
+        d4            TK_ID        Line : 46
+         ]           TK_SQR        Line : 46
+      <---       TK_ASSIGNOP        Line : 46
+      call          TK_CALL        Line : 46
+_readMarks         TK_FUNID        Line : 46
+      with          TK_WITH        Line : 46
+parameters       TK_PARAMETERS        Line : 46
+         [           TK_SQL        Line : 46
+        b5            TK_ID        Line : 46
+         ]           TK_SQR        Line : 46
+         ;           TK_SEM        Line : 46
+      b5c6            TK_ID        Line : 47
+      <---       TK_ASSIGNOP        Line : 47
+      b5c6            TK_ID        Line : 47
+         +          TK_PLUS        Line : 47
+        d4            TK_ID        Line : 47
+         ;           TK_SEM        Line : 47
+         %       TK_COMMENT        Line : 48
+        b5            TK_ID        Line : 49
+      <---       TK_ASSIGNOP        Line : 49
+        b5            TK_ID        Line : 49
+         +          TK_PLUS        Line : 49
+         1           TK_NUM        Line : 49
+         ;           TK_SEM        Line : 49
+  endwhile       TK_ENDWHILE        Line : 50
+        d4            TK_ID        Line : 51
+      <---       TK_ASSIGNOP        Line : 51
+      b5c6            TK_ID        Line : 51
+         /           TK_DIV        Line : 51
+ d5cb34567            TK_ID        Line : 51
+         ;           TK_SEM        Line : 51
+     write         TK_WRITE        Line : 52
+         (            TK_OP        Line : 52
+        d4            TK_ID        Line : 52
+         .           TK_DOT        Line : 52
+     maths       TK_FIELDID        Line : 52
+         )            TK_CL        Line : 52
+         ;           TK_SEM        Line : 52
+     write         TK_WRITE        Line : 53
+         (            TK_OP        Line : 53
+        d4            TK_ID        Line : 53
+         .           TK_DOT        Line : 53
+   physics       TK_FIELDID        Line : 53
+         )            TK_CL        Line : 53
+         ;           TK_SEM        Line : 53
+     write         TK_WRITE        Line : 54
+         (            TK_OP        Line : 54
+        d4            TK_ID        Line : 54
+         .           TK_DOT        Line : 54
+ chemistry       TK_FIELDID        Line : 54
+         )            TK_CL        Line : 54
+         ;           TK_SEM        Line : 54
+    return        TK_RETURN        Line : 55
+         ;           TK_SEM        Line : 55
+       end           TK_END        Line : 56

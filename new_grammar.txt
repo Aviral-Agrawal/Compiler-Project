@@ -68,7 +68,7 @@
 <all>==> TK_NUM
 <all>==> TK_RNUM
 <B>===> <temp>
-<B>==>eps 
+<B>==>eps
 <temp>===> eps 
 <temp>==> TK_DOT TK_FIELDID
 <booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL

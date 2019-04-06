@@ -1354,8 +1354,8 @@ void printTokenInfile(FILE* fp, keyTable* kt, hashTable* ht)
            // printf("<%s>\n", "TK_DOLLAR");//Integrate this in fprintf
             break;
         }
-        printf("<%-20s> Line : %d\n", enumToString(t->tkType), t->lineNo);
-        fprintf(fpout,"<%-20s> Line : %d\n", enumToString(t->tkType), t->lineNo);
+        printf("%10s       %10s         Line : %d\n",t->lexeme, enumToString(t->tkType), t->lineNo);
+        fprintf(fpout,"%10s       %10s        Line : %d\n", t->lexeme, enumToString(t->tkType), t->lineNo);
         free(t);
     }
     fclose(fpout);

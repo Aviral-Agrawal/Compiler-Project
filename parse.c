@@ -29,13 +29,13 @@ void handleLexError(tokenInfo* tk)
 {
     printf("Line %d: ",tk->lineNo);
 }
-void handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk)
+int handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk, int line)
 {
   if(isTerminal(peek(stk)))
   {
       if(strcmp(peek(stk),"TK_SEM")==0)
       {
-          printf("\nLine %d: Semicolon is missing",tk->lineNo);
+          printf("\nLine %d: Semicolon is missing",line);
           pop(stk);
       }
       else
@@ -65,13 +65,19 @@ void handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk)
           if(strcmp(rh->next->nonTermName,gmr->nonTerm[i].next->nonTermName)!=0)
           {
             pop(stk);
-            return;
+            return 0;
           }
         }
       }
     printf("\nLine %d: The token %s for lexeme %s does not match with the expected token %s",tk->lineNo,enumToString(tk->tkType),tk->lexeme,rh->next->nonTermName);
-    }
     pop(stk);
+    }
+    else
+    {
+      printf("\nLine %d: Unexpected token %s for lexeme %s, Invalid statement",tk->lineNo,enumToString(tk->tkType),tk->lexeme);
+      return 1;
+    }
+  return 0;
   }
 
     //printf("\nLine %d: Unexpected token %s for lexeme %s",tk->lineNo,enumToString(tk->tkType),tk->lexeme);
@@ -279,8 +285,40 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
         // while(tkData[pos].tkType!=TK_SEM)
         //     pos++;
         // pos++;
-        pos++;
-        pop(stk);
+
+        int temp=pos;
+        int count=0;
+        while(tkData[temp].tkType==TK_ERROR)
+        {
+          temp++;
+          count++;
+        }
+        if(isTerminal(peek(stk)))
+        {
+          if(strcmp(peek(stk),enumToString(tkData[temp].tkType))==0)
+            pos=temp;
+          else
+          {
+            while(count>0)
+            {
+              pop(stk);
+              count--;
+            }
+            pos=temp;
+          }
+        }
+        else
+        {
+          int row=getSetIndex(dt,peek(stk));
+          int col = getSetIndex(dt,enumToString(tkData[temp].tkType));
+          int index=parseTable[row][col];
+          if(index==-1)
+            pop(stk);
+          if(strcmp(peek(stk),enumToString(tkData[temp].tkType))!=0 && isTerminal(peek(stk)))
+            pop(stk);
+          pos=temp;
+
+        }
         continue;
     }
     // checking the parse table
@@ -320,28 +358,37 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
       //   continue;
       //
       // }
-
-        handleSyntaxErrorWithSyn(gmr,&tkData[pos],stk);
-        if(strcmp(peek(stk),enumToString(tkData[pos].tkType))==0)
-          continue;
-
-        while(strcmp(peek(stk),"TK_SEM")!=0 && isTerminal(peek(stk)) && !belongsInFollow(gmr,enumToString(tkData[pos].tkType),peek(stk)) && tkData[pos].tkType!=TK_SEM)
-        {
-            pos++;
-        }
-        if(tkData[pos].tkType==TK_SEM)
-        {
+      int line=0;
+      if(tkData[pos].lineNo>tkData[pos-1].lineNo)
+        line=tkData[pos].lineNo-1;
+      int flag = handleSyntaxErrorWithSyn(gmr,&tkData[pos],stk,line);
+      if(flag==1)
+      {
+        while(tkData[pos].tkType!=TK_SEM)
           pos++;
-          while(strcmp(peek(stk),"TK_SEM")!=0)
-          {
-              pop(stk);
-          }
-          pop(stk);
-        }
-          //getNextToken(fp,&tkData[tokenCount++]);
-
+        pos++;
         continue;
-     }
+      }
+      if(strcmp(peek(stk),enumToString(tkData[pos].tkType))==0)
+        continue;
+
+      while(strcmp(peek(stk),"TK_SEM")!=0 && isTerminal(peek(stk)) && !belongsInFollow(gmr,enumToString(tkData[pos].tkType),peek(stk)) && tkData[pos].tkType!=TK_SEM)
+      {
+          pos++;
+      }
+      if(tkData[pos].tkType==TK_SEM)
+      {
+        pos++;
+        while(strcmp(peek(stk),"TK_SEM")!=0)
+        {
+            pop(stk);
+        }
+        pop(stk);
+      }
+        //getNextToken(fp,&tkData[tokenCount++]);
+
+      continue;
+   }
     // pushing the right side of the rule on the stack in the opposite direction
 
 
