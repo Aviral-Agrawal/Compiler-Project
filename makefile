@@ -1,5 +1,5 @@
-compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o  driver.o
-	gcc -g  -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o driver.o
+compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o dbg_sym.o driver.o
+	gcc -g  -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o dbg_sym.o driver.o
 
 compileLexer : lexer.o
 	gcc -g -o lexerexe lexer.o
@@ -33,6 +33,9 @@ parse.o: parse.c
 
 ast.o: ast.h ast.c
 	gcc -g -c ast.h ast.c
+
+dbg_sym.o: symbolTable.h dbg_sym.c
+	gcc -g -c symbolTable.h dbg_sym.c
 
 driver.o: driver.c
 	gcc -g  -c driver.c
