@@ -82,3 +82,4 @@ idfTable *findFunction(symbolTable *st, char *func_name);
 int findIdentifier(idfTable *it, char *id); // returns ntype -1 if not found
 int findIdinGlobal(symbolTable *st, char *id); // returns ntype -1 if not found
 idfTable *findRecordFields(symbolTable *st, char *rec_name);
+void semanticAnalyzer(astNode *root);

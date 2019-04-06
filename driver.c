@@ -51,6 +51,11 @@
 #include "ast.h"
 #endif
 
+#ifndef __SYMBOL_TABLE_H__
+#define __SYMBOL_TABLE_H__
+#include "symbolTable.h"
+#endif
+
 #include <time.h>
 
 treeNode* printSynToken(char* ch, char* ch1);
@@ -144,6 +149,7 @@ void optionPrinter(int* t)
 	printf("Enter 3 : For Invoking Lexer and Parser Both\n");
 	printf("Enter 4 : See the Execution Time\n");
 	printf("Enter 5 : print the AST Tree\n");
+	printf("Enter 6 : call semanticAnalyzer and typeChecker\n");
 	scanf("%d",t);
 	// fflush(stdin);
 	// fflush(stdout);
@@ -229,7 +235,7 @@ treeNode* printSynToken(char* ch,char* ch1)
 	return tree;
 }
 
-void printAST(char* outfile, treeNode* p_root)
+astNode *printAST(char* outfile, treeNode* p_root)
 {
 	astNode* ast_root = (astNode*) malloc(sizeof(astNode));
 	ast_root->keyword = p_root->keyword;
@@ -241,7 +247,7 @@ void printAST(char* outfile, treeNode* p_root)
 	FILE* fpout = fopen(outfile, "w");
 	printASTinFile(ast_root, fpout);
 	fclose(fpout);
-	return;
+	return ast_root;
 }
 
 
@@ -262,6 +268,7 @@ int main(int argc, char *argv[]) {
 	printf("7. Error handling in Lexical working but in syntax not tested\n");
 	printf("8. Segmentation fault coming in parser\n\n");
 
+	astNode *ast_root;
     int t;
 	optionPrinter(&t);
     while(t!=0)
@@ -279,7 +286,11 @@ int main(int argc, char *argv[]) {
 		else if(t == 5)
 		{
 			treeNode* p_root = printSynToken(argv[1],argv[2]);
-			printAST(argv[3], p_root);
+			ast_root = printAST(argv[3], p_root);
+		}
+		else if(t == 6)
+		{
+			semanticAnalyzer(ast_root);
 		}
 		printf("Entered option %d done!!\n",t);
 		optionPrinter(&t);
