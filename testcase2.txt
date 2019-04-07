@@ -20,8 +20,15 @@ _main
 	record #marks
 		type real : maths;
 		type real: physics;
+		type int: chemistry;
+	endrecord;
+
+	record #mark1
+		type real : maths;
+		type real: physics;
 		type real: chemistry;
 	endrecord;
+
 	% each field above represents the marks obtained in corresponding subject
 
 	type record #marks : d4;
@@ -30,6 +37,8 @@ _main
 	type int : b5;
 	type int : d5cb34567;
 	type record #marks : b5c6;
+	type record #mark : b5c7;
+
 	%The identifier b5c6 stores the sum of marks
 
 	b5 <--- 1;
@@ -37,6 +46,7 @@ _main
 	b5c6.maths <--- 0.00;
 	b5c6.physics <--- 0.00;
 	b5c6.chemistry <---0.00;
+	b5c7<---b5c6;
 	while(b5<=d5cb34567)
 		[d4] <--- call _readMarks with parameters [b5];
 		b5c6 <--- b5c6 + d4;

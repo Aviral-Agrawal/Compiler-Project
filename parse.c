@@ -358,7 +358,13 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
       //   continue;
       //
       // }
-
+      int col1=getSetIndex(dt,enumToString(tkData[pos+1].tkType));
+      if(parseTable[row][col1]!=-1)
+      {
+        printf("\nLine %d: Character '%s' not allowed in this name",tkData[pos].lineNo,tkData[pos].lexeme);
+        pos++;
+        continue;
+      }
       if((tkData[pos].tkType==TK_TYPE && strcmp(peek(stk),"<stmt>")==0))
       {
         printf("\nLine %d: Invalid statement in this scope with starting %s",tkData[pos].lineNo,tkData[pos].lexeme);

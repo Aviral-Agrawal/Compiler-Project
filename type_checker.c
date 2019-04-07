@@ -43,6 +43,18 @@ int findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *s
       // handling records
       // TK_ID is a record instance
       idfTable *localRec = findRecordFields(st,root->tk.lexeme);
+      // if(root->nextSibling->firstChild==NULL || root->nextSibling->firstChild->firstChild==NULL) // Equating records
+      // {
+      //   int sum=0;
+      //   idfTable* temp=localRec;
+      //   while(temp!=NULL)
+      //   {
+      //       sum+=temp->nType;
+      //
+      //       temp=temp->next;
+      //   }
+      //   return sum;
+      // }
       if(root->nextSibling != NULL && strcmp(root->nextSibling->keyword,"<B>")==0 )
       {
         int fieldType = findIdentifier(localRec, root->nextSibling->firstChild->firstChild->tk.lexeme);
