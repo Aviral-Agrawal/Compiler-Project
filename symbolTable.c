@@ -906,13 +906,13 @@ void populateGlobalTable(astNode *root,symbolTable* st)
   }
 }
 
-idfTable *findFunction(symbolTable *st, char *func_name)//returns table of locak variables
+funTable *findFunction(symbolTable *st, char *func_name)//returns table of locak variables
 {
     funTable* temp=st->fHead;
     while(temp!=NULL)
     {
         if(strcmp(temp->keyword,func_name)==0)
-            return temp->localVariable;
+            return temp;
 
         temp=temp->next;
     }

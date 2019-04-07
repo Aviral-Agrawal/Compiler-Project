@@ -290,9 +290,24 @@ int main(int argc, char *argv[]) {
 		}
 		else if(t == 6)
 		{
-			semanticAnalyzer(ast_root);
+			treeNode* p_root = printSynToken(argv[1],argv[2]);
+			astNode* ast_root = (astNode*) malloc(sizeof(astNode));
+			ast_root->keyword = p_root->keyword;
+			ast_root->tk = p_root->tk;
+			ast_root->parent = NULL;
+			ast_root->nextSibling = NULL;
+			ast_root->firstChild = NULL;
+			createAbstractSyntaxTree(ast_root, p_root);
+			symbolTable* st = initSymbolTable();
+			populateSymbolTable(ast_root,st);
+			printGlobalTable(st);
+			printf("\n");
+			printRecordTable(st);
+			printf("\n");
+			printFunctionTable(st);
+			typeChecker(ast_root,st);
 		}
-		printf("Entered option %d done!!\n",t);
+		printf("\nEntered option %d done!!\n",t);
 		optionPrinter(&t);
 		free(BUFF);
     }

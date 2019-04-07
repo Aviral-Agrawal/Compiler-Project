@@ -14,20 +14,28 @@ char *typeToString(int type)
     strcpy(key,"record");
   return key;
 }
-int findArithmeticExpressionType(astNode *root, idfTable *localVar, symbolTable *st, astNode *leaf)
+int findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *st, astNode *leaf)
 {
   if(root==NULL)
     return -1;
   else if(strcmp(root->keyword,"TK_ID")==0)
   {
-    int type = findIdentifier(localVar, root->tk.lexeme); // singleOrRecId->TK_ID
+    int type = findIdentifier(funPtr->localVariable, root->tk.lexeme); // singleOrRecId->TK_ID
+    if(type==-1)
+    {
+      type = findIdentifier(funPtr->inputParams, root->tk.lexeme);
+    }
+    if(type==-1)
+    {
+      type = findIdentifier(funPtr->outputParams, root->tk.lexeme);
+    }
     if(type==-1)
     {
       type = findIdinGlobal(st,root->tk.lexeme);
     }
     if(type==-1)
     {
-      printf("\n variable %s not declared",root->tk.lexeme);
+      printf("\nvariable %s not declared\n",root->tk.lexeme);
       return -1;
     }
     if(type == 2)
@@ -37,7 +45,7 @@ int findArithmeticExpressionType(astNode *root, idfTable *localVar, symbolTable 
       idfTable *localRec = findRecordFields(st,root->tk.lexeme);
       if(root->nextSibling != NULL && strcmp(root->nextSibling->keyword,"<B>")==0 )
       {
-        int fieldType = findIdentifier(localRec, root->nextSibling->firstChild->firstChild->nextSibling->tk.lexeme);
+        int fieldType = findIdentifier(localRec, root->nextSibling->firstChild->firstChild->tk.lexeme);
         return fieldType;
       }
     }
@@ -57,15 +65,15 @@ int findArithmeticExpressionType(astNode *root, idfTable *localVar, symbolTable 
   }
   else if(strcmp(root->keyword,"<arithmeticExpression>")==0)
   {
-    return findArithmeticExpressionType(root->firstChild,localVar,st,leaf);
+    return findArithmeticExpressionType(root->firstChild,funPtr,st,leaf);
   }
 
   // recursive calls for children and siblings
   astNode *leaf1,*leaf2;
-  int type1,type2;
+  int type1=-1,type2=-1;
   if(root->firstChild!=NULL)
   {
-    type1 = findArithmeticExpressionType(root->firstChild,localVar,st,leaf);
+    type1 = findArithmeticExpressionType(root->firstChild,funPtr,st,leaf);
     leaf1=leaf;
   }
   astNode *temp = root;
@@ -75,7 +83,7 @@ int findArithmeticExpressionType(astNode *root, idfTable *localVar, symbolTable 
     temp=temp->nextSibling;
     while(temp!=NULL)
     {
-      type2 = findArithmeticExpressionType(temp,localVar,st,leaf);
+      type2 = findArithmeticExpressionType(temp,funPtr,st,leaf);
       leaf2=leaf;
       temp=temp->nextSibling;
     }
@@ -86,36 +94,50 @@ int findArithmeticExpressionType(astNode *root, idfTable *localVar, symbolTable 
     return -1;
   else
   {
-    printf("\n The type  of %s: %s does not match with %s: %s",leaf1->tk.lexeme,typeToString(type1),leaf2->tk.lexeme,typeToString(type2));
+    printf("\nThe type  of %s: %s does not match with %s: %s\n",leaf1->tk.lexeme,typeToString(type1),leaf2->tk.lexeme,typeToString(type2));
     return -1;
   }
 }
-void typeCheckerWithinFunction(astNode *root, idfTable *localVar, symbolTable *st)
+void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
 {
   if(root==NULL)
     return;
   if(strcmp(root->keyword,"<assignmentStmt>")==0)
   {
-    int left_type = findIdentifier(localVar, root->firstChild->firstChild->tk.lexeme); // singleOrRecId->TK_ID
+    int left_type = findIdentifier(funPtr->localVariable, root->firstChild->firstChild->tk.lexeme); // singleOrRecId->TK_ID
+    if(left_type==-1)
+    {
+      left_type = findIdentifier(funPtr->inputParams, root->firstChild->firstChild->tk.lexeme);
+    }
+    if(left_type==-1)
+    {
+      left_type = findIdentifier(funPtr->outputParams, root->firstChild->firstChild->tk.lexeme);
+    }
     if(left_type==-1)
     {
       left_type = findIdinGlobal(st,root->firstChild->firstChild->tk.lexeme);
     }
     if(left_type==-1)
     {
-      printf("\n variable %s not declared",root->firstChild->firstChild->tk.lexeme);
+      printf("\nvariable %s not declared\n",root->firstChild->firstChild->tk.lexeme);
       return;
     }
     astNode *leaf;
-    int right_type = findArithmeticExpressionType(root->firstChild->nextSibling->nextSibling->firstChild, localVar, st, leaf);
+    int right_type;
+    if(root->firstChild!=NULL && root->firstChild->nextSibling !=NULL)
+    {
+      right_type = findArithmeticExpressionType(root->firstChild->nextSibling->firstChild, funPtr, st, leaf);
     // sending arithmeticExpression's first child
+    }
+    else
+      right_type=-1;
     if(right_type == -1)
       return;
     if(left_type == right_type)
       return;
     else if(left_type !=right_type)
     {
-      printf("\n The type of %s: %s does not match with the right hand side with type %s",root->firstChild->firstChild->tk.lexeme,typeToString(left_type),typeToString(right_type));
+      printf("\nThe type of %s: %s does not match with the right hand side with type %s\n",root->firstChild->firstChild->tk.lexeme,typeToString(left_type),typeToString(right_type));
     }
 
   }// end of if
@@ -124,53 +146,69 @@ void typeCheckerWithinFunction(astNode *root, idfTable *localVar, symbolTable *s
   if(strcmp(root->keyword,"<booleanExpression>")==0 && strcmp(root->firstChild->keyword,"<var>")==0)
   {
     int type1,type2;
-    if(strcmp(root->firstChild->firstChild->keyword,"<TK_ID>")==0)
+    if(strcmp(root->firstChild->firstChild->keyword,"TK_ID")==0)
     {
-      type1 = findIdentifier(localVar, root->firstChild->firstChild->tk.lexeme);
+      type1 = findIdentifier(funPtr->localVariable, root->firstChild->firstChild->tk.lexeme);
+      if(type1==-1)
+      {
+        type1 = findIdentifier(funPtr->inputParams, root->firstChild->firstChild->tk.lexeme);
+      }
+      if(type1==-1)
+      {
+        type1 = findIdentifier(funPtr->outputParams, root->firstChild->firstChild->tk.lexeme);
+      }
       if(type1==-1)
       {
         type1 = findIdinGlobal(st,root->firstChild->firstChild->tk.lexeme);
       }
       if(type1==-1)
       {
-        printf("\n variable %s not declared",root->firstChild->firstChild->tk.lexeme);
+        printf("\nvariable %s not declared\n",root->firstChild->firstChild->tk.lexeme);
         return;
       }
     }
-    else if(strcmp(root->firstChild->firstChild->keyword,"<TK_NUM>")==0)
+    else if(strcmp(root->firstChild->firstChild->keyword,"TK_NUM")==0)
       type1=0;
-    else if(strcmp(root->firstChild->firstChild->keyword,"<TK_NUM>")==1)
+    else if(strcmp(root->firstChild->firstChild->keyword,"TK_NUM")==1)
       type1=1;
 
       // for type 2
-    if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"<TK_ID>")==0)
+    if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_ID")==0)
     {
-      type2 = findIdentifier(localVar, root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+      type2 = findIdentifier(funPtr->localVariable, root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+      if(type2==-1)
+      {
+        type2 = findIdentifier(funPtr->inputParams, root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+      }
+      if(type2==-1)
+      {
+        type2 = findIdentifier(funPtr->outputParams, root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+      }
       if(type2==-1)
       {
         type2 = findIdinGlobal(st,root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
       }
       if(type2==-1)
       {
-        printf("\n variable %s not declared",root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+        printf("\nvariable %s not declared\n",root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
         return;
       }
     }
-    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"<TK_NUM>")==0)
+    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_NUM")==0)
       type2=0;
-    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"<TK_NUM>")==1)
+    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_NUM")==1)
       type2=1;
 
     if(type1==type2)
       return;
     else if(type1!=type2)
     {
-      printf("\n The type of %s:%s does not match with type of %s:%s",root->firstChild->firstChild->tk.lexeme,typeToString(type1),root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme,typeToString(type2));
+      printf("\nThe type of %s:%s does not match with type of %s:%s\n",root->firstChild->firstChild->tk.lexeme,typeToString(type1),root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme,typeToString(type2));
     }
   }
   // recursive calls for children and siblings
   if(root->firstChild!=NULL)
-    typeCheckerWithinFunction(root->firstChild,localVar,st);
+    typeCheckerWithinFunction(root->firstChild,funPtr,st);
   astNode *temp = root->firstChild;
 
   if(temp!=NULL)
@@ -178,7 +216,7 @@ void typeCheckerWithinFunction(astNode *root, idfTable *localVar, symbolTable *s
     temp=temp->nextSibling;
     while(temp!=NULL)
     {
-      typeCheckerWithinFunction(temp,localVar,st);
+      typeCheckerWithinFunction(temp,funPtr,st);
       temp=temp->nextSibling;
     }
   }
@@ -189,15 +227,15 @@ int typeChecker(astNode *root, symbolTable *st)
     return 0;
   if(strcmp(root->keyword,"<function>")==0)
   {
-    idfTable *localVar=findFunction(st,root->firstChild->tk.lexeme);
-    if(localVar!=NULL)
-      typeCheckerWithinFunction(root,localVar,st);
+    funTable *funPtr=findFunction(st,root->firstChild->tk.lexeme);
+    if(funPtr!=NULL)
+      typeCheckerWithinFunction(root,funPtr,st);
   }
   if(strcmp(root->keyword,"TK_MAIN")==0)
   {
-    idfTable *localVar=findFunction(st,root->firstChild->tk.lexeme);
-    if(localVar!=NULL)
-      typeCheckerWithinFunction(root,localVar,st);
+    funTable *funPtr=findFunction(st,"_main");
+    if(funPtr!=NULL)
+      typeCheckerWithinFunction(root,funPtr,st);
   }
   // recursive calls for children and siblings
   if(root->firstChild!=NULL)
@@ -213,12 +251,4 @@ int typeChecker(astNode *root, symbolTable *st)
       temp=temp->nextSibling;
     }
   }
-}
-void semanticAnalyzer(astNode *root)
-{
-  symbolTable* st = initSymbolTable();
-  populateSymbolTable(root, st);
-  //typeChecker(root, st);
-
-
 }
