@@ -128,18 +128,18 @@ void printFunctionTable(symbolTable* st)
   return;
   // printf("%c[4mHello world\n%c[0m",27,27);
   funTable* ft = st->fHead;
-  printf("WELCOME TO FUNCTION TABLE PRINTER!!\n");
+  printf("WELCOME TO FUNCTION TABLE PRINTER!!\n\n");
   // printf("%c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m\n",27,"KEYWORD",27,27,"WIDTH",27,27,"OFFSET",27,27,"NUM_TYPE",27);
-  printf("Function Name : ");
   while(ft!=NULL)
   {
     printf("Function Name : %10s\n",ft->keyword);
     //Input Parameters
-    printf("INPUT PARAMETERS:\n");
+    printf("\nINPUT PARAMETERS:\n");
     idfTable* idfTemp = ft->inputParams;
+    printf("%c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m\n",27,"KEYWORD",27,27,"WIDTH",27,27,"SCOPE",27,27,"OFFSET",27,27,"NUM_TYPE",27);
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+      printf("%-10s %-10d %-10s %-10d ",idfTemp->keyword,idfTemp->width,ft->keyword,idfTemp->offset);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -150,11 +150,11 @@ void printFunctionTable(symbolTable* st)
     }
 
     //Output Parameters
-    printf("OUTPUT PARAMETERS:\n");
+    printf("\nOUTPUT PARAMETERS:\n");
     idfTemp = ft->outputParams;
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+      printf("%-10s %-10d %-10s %-10d ",idfTemp->keyword,idfTemp->width,ft->keyword,idfTemp->offset);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -165,11 +165,11 @@ void printFunctionTable(symbolTable* st)
     }
 
     //Local Variables
-    printf("LOCAL VARIABLES:\n");
+    printf("\nLOCAL VARIABLES:\n");
     idfTemp = ft->localVariable;
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+      printf("%-10s %-10d %-10s %-10d ",idfTemp->keyword,idfTemp->width,ft->keyword,idfTemp->offset);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -180,6 +180,7 @@ void printFunctionTable(symbolTable* st)
     }
 
     // Forwarding to next Function Call
+    printf("\n");
     ft=ft->next;
   }
 
@@ -197,7 +198,7 @@ void populateFunctionTable(astNode *root,symbolTable* st)
   if(root==NULL)
   return;
   astNode *temp=root;
-  if(temp->keyword!=NULL && strcmp(temp->keyword,"<function>")==0 )
+  if(strcmp(temp->keyword,"<function>")==0 )
   {
 
     funTable* iter = st->fHead;
@@ -392,7 +393,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
 
     int tempWidthInput = 0;
     iter->outputParams=initIdfTable();
-    if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+    if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
     {
       astNode* temp1 = paraList->firstChild->firstChild->firstChild;
 
@@ -422,7 +423,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
       tempWidthInput+=iter->outputParams->width ;
     }
 
-    else   if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
+    else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
     {
       astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
       iter->outputParams->nType=2;
@@ -458,8 +459,6 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
     //Here "tempWidthInputRecord" is the current summation of the offset
 
     //Now Recusrsing in the <remaining_list>
-    if(paraList->firstChild->nextSibling!=NULL && paraList->firstChild->nextSibling->nextSibling!=NULL )
-    {
     astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
     if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
     {
@@ -534,7 +533,6 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
         curPosInParamTable= curPosInParamTable->next;
       }
       // if(remListCheck)
-    }
     }// end of iterative while
 }
 
@@ -543,7 +541,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
     astNode *declarations=stmts->firstChild->nextSibling;
     idfTable* curPosInParamTable1=iter->localVariable;
     int tempOffset=0;
-    while(declarations!=NULL && declarations->firstChild!=NULL && declarations->firstChild->tk.lexeme!=NULL && strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
+    while(strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
     {
         astNode *declaration=declarations->firstChild;
         //if condition separate and not part of the while loop since if the first variable is global the loop would never work and all the remaining variables would be left out
@@ -642,7 +640,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
 
   // ============================ record handling ==============================================
 
-  if(temp->keyword!=NULL && strcmp(temp->keyword,"<typeDefinition>")==0 )
+  if(strcmp(temp->keyword,"<typeDefinition>")==0 )
   {
     //populate symbol table for global Variables
     recTable* iter = st->rHead;
@@ -766,7 +764,7 @@ void populateGlobalTable(astNode *root,symbolTable* st)
   astNode *temp=root;
 
   // ============================GLOBAL POPULATION==============================================
-  if(temp->keyword!=NULL && strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
+  if(strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
   {
     //populate symbol table for global Variables
     globTable* iter = st->gHead;

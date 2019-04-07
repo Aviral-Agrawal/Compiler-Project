@@ -138,7 +138,7 @@ void printTime(char* ch, char* ch1)
     total_CPU_time  =  (double) (end_time - start_time);
     total_CPU_time_in_seconds =   total_CPU_time / CLOCKS_PER_SEC;
     // Print both total_CPU_time and total_CPU_time_in_seconds
-    printf("%lf : TOTAL CPU TIME\n%lf : TOTAL CPU TIME IN SECONDS\n",total_CPU_time,total_CPU_time_in_seconds);
+    printf("%lf : TOTAL CPU TIME\n%lf : TOTAL CPU TIME IN SECONDS\n",total_CPU_time*1000,total_CPU_time_in_seconds*1000);
 }
 
 void optionPrinter(int* t)
