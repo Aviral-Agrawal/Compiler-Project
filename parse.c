@@ -29,7 +29,7 @@ void handleLexError(tokenInfo* tk)
 {
     printf("Line %d: ",tk->lineNo);
 }
-int handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk, int line)
+int handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk, int line, int synFlag)
 {
   if(isTerminal(peek(stk)))
   {
@@ -74,8 +74,8 @@ int handleSyntaxErrorWithSyn(grammar *gmr,tokenInfo* tk,stackParse *stk, int lin
     }
     else
     {
-      printf("\nLine %d: Unexpected token %s for lexeme %s, Invalid statement",tk->lineNo,enumToString(tk->tkType),tk->lexeme);
-      return 1;
+      pop(stk);
+      return 0;
     }
   return 0;
   }
@@ -358,10 +358,34 @@ treeNode* parse(FILE *fp, grammar *gmr, FILE *fp2)
       //   continue;
       //
       // }
+
+      if((tkData[pos].tkType==TK_TYPE && strcmp(peek(stk),"<stmt>")==0))
+      {
+        printf("\nLine %d: Invalid statement in this scope with starting %s",tkData[pos].lineNo,tkData[pos].lexeme);
+        while(tkData[pos].tkType!=TK_SEM)
+          pos++;
+        pos++;
+        continue;
+      }
+      if((tkData[pos].tkType==TK_RECORD && strcmp(peek(stk),"<stmt>")==0) || (tkData[pos].tkType==TK_RECORD && strcmp(peek(stk),"<otherFunctions>")==0) || (tkData[pos].tkType==TK_RECORD && strcmp(peek(stk),"<mainFunction>")==0))
+      {
+        printf("\nLine %d: Invalid statement in this scope with starting %s",tkData[pos].lineNo,tkData[pos].lexeme);
+        while(tkData[pos].tkType!=TK_ENDRECORD)
+          pos++;
+        pos=pos+2;
+        continue;
+      }
       int line=0;
       if(tkData[pos].lineNo>tkData[pos-1].lineNo)
         line=tkData[pos].lineNo-1;
-      int flag = handleSyntaxErrorWithSyn(gmr,&tkData[pos],stk,line);
+      // if(strcmp(peek(stk),"<B>")==0 && tkData[pos].tkType!=TK_DOT)
+      // {
+      //   pop(stk);
+      //   continue;
+      // }
+      if(belongsInFollow(gmr,enumToString(tkData[pos].tkType),peek(stk)))
+        synFlag=1;
+      int flag = handleSyntaxErrorWithSyn(gmr,&tkData[pos],stk,line,synFlag);
       if(flag==1)
       {
         while(tkData[pos].tkType!=TK_SEM)

@@ -35,7 +35,7 @@ int findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *s
     }
     if(type==-1)
     {
-      printf("\nvariable %s not declared\n",root->tk.lexeme);
+      printf("\nLine %d:The variable <%s> is undeclared\n",root->tk.lineNo,root->tk.lexeme);
       return -1;
     }
     if(type == 2)
@@ -94,7 +94,7 @@ int findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *s
     return -1;
   else
   {
-    printf("\nThe type  of %s: %s does not match with %s: %s\n",leaf1->tk.lexeme,typeToString(type1),leaf2->tk.lexeme,typeToString(type2));
+    printf("\nLine no:%d Type Mismatch: The type  of %s: %s does not match with %s: %s\n",leaf1->tk.lineNo,leaf1->tk.lexeme,typeToString(type1),leaf2->tk.lexeme,typeToString(type2));
     return -1;
   }
 }
@@ -102,7 +102,7 @@ void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
 {
   if(root==NULL)
     return;
-  if(strcmp(root->keyword,"<assignmentStmt>")==0)
+  if(root->keyword!=NULL && strcmp(root->keyword,"<assignmentStmt>")==0)
   {
     int left_type = findIdentifier(funPtr->localVariable, root->firstChild->firstChild->tk.lexeme); // singleOrRecId->TK_ID
     if(left_type==-1)
@@ -119,7 +119,7 @@ void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
     }
     if(left_type==-1)
     {
-      printf("\nvariable %s not declared\n",root->firstChild->firstChild->tk.lexeme);
+      printf("\nLine %d:The variable <%s> is undeclared\n",root->firstChild->firstChild->tk.lineNo,root->firstChild->firstChild->tk.lexeme);
       return;
     }
     astNode *leaf;
@@ -137,13 +137,13 @@ void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
       return;
     else if(left_type !=right_type)
     {
-      printf("\nThe type of %s: %s does not match with the right hand side with type %s\n",root->firstChild->firstChild->tk.lexeme,typeToString(left_type),typeToString(right_type));
+      printf("\nLine no:%d Type Mismatch:The type of %s: %s does not match with the right hand side with type %s\n",root->firstChild->firstChild->tk.lineNo,root->firstChild->firstChild->tk.lexeme,typeToString(left_type),typeToString(right_type));
     }
 
   }// end of if
 
   // for boolean expression only check var relOp var, other types are implicitly correct
-  if(strcmp(root->keyword,"<booleanExpression>")==0 && strcmp(root->firstChild->keyword,"<var>")==0)
+  if(root->keyword!=NULL && strcmp(root->keyword,"<booleanExpression>")==0 && root->firstChild->keyword!=NULL && strcmp(root->firstChild->keyword,"<var>")==0)
   {
     int type1,type2;
     if(strcmp(root->firstChild->firstChild->keyword,"TK_ID")==0)
@@ -163,7 +163,7 @@ void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
       }
       if(type1==-1)
       {
-        printf("\nvariable %s not declared\n",root->firstChild->firstChild->tk.lexeme);
+        printf("\nLine %d:The variable <%s> is undeclared\n",root->firstChild->firstChild->tk.lineNo,root->firstChild->firstChild->tk.lexeme);
         return;
       }
     }
@@ -190,20 +190,20 @@ void typeCheckerWithinFunction(astNode *root, funTable *funPtr, symbolTable *st)
       }
       if(type2==-1)
       {
-        printf("\nvariable %s not declared\n",root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
+        printf("\nLine %d:The variable <%s> is undeclared\n",root->firstChild->nextSibling->nextSibling->firstChild->tk.lineNo,root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme);
         return;
       }
     }
     else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_NUM")==0)
       type2=0;
-    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_NUM")==1)
+    else if(strcmp(root->firstChild->nextSibling->nextSibling->firstChild->keyword,"TK_RNUM")==0)
       type2=1;
 
     if(type1==type2)
       return;
     else if(type1!=type2)
     {
-      printf("\nThe type of %s:%s does not match with type of %s:%s\n",root->firstChild->firstChild->tk.lexeme,typeToString(type1),root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme,typeToString(type2));
+      printf("\nLine no:%d Type Mismatch:The type of %s:%s does not match with type of %s:%s\n",root->firstChild->firstChild->tk.lineNo,root->firstChild->firstChild->tk.lexeme,typeToString(type1),root->firstChild->nextSibling->nextSibling->firstChild->tk.lexeme,typeToString(type2));
     }
   }
   // recursive calls for children and siblings
@@ -225,13 +225,13 @@ int typeChecker(astNode *root, symbolTable *st)
 {
   if(root==NULL)
     return 0;
-  if(strcmp(root->keyword,"<function>")==0)
+  if(root->keyword!=NULL && strcmp(root->keyword,"<function>")==0)
   {
     funTable *funPtr=findFunction(st,root->firstChild->tk.lexeme);
     if(funPtr!=NULL)
       typeCheckerWithinFunction(root,funPtr,st);
   }
-  if(strcmp(root->keyword,"TK_MAIN")==0)
+  if(root->keyword!=NULL && strcmp(root->keyword,"TK_MAIN")==0)
   {
     funTable *funPtr=findFunction(st,"_main");
     if(funPtr!=NULL)

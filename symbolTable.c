@@ -197,7 +197,7 @@ void populateFunctionTable(astNode *root,symbolTable* st)
   if(root==NULL)
   return;
   astNode *temp=root;
-  if(strcmp(temp->keyword,"<function>")==0 )
+  if(temp->keyword!=NULL && strcmp(temp->keyword,"<function>")==0 )
   {
 
     funTable* iter = st->fHead;
@@ -392,7 +392,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
 
     int tempWidthInput = 0;
     iter->outputParams=initIdfTable();
-    if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+    if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
     {
       astNode* temp1 = paraList->firstChild->firstChild->firstChild;
 
@@ -422,7 +422,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
       tempWidthInput+=iter->outputParams->width ;
     }
 
-    else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
+    else   if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
     {
       astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
       iter->outputParams->nType=2;
@@ -458,6 +458,8 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
     //Here "tempWidthInputRecord" is the current summation of the offset
 
     //Now Recusrsing in the <remaining_list>
+    if(paraList->firstChild->nextSibling!=NULL && paraList->firstChild->nextSibling->nextSibling!=NULL )
+    {
     astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
     if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
     {
@@ -532,6 +534,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
         curPosInParamTable= curPosInParamTable->next;
       }
       // if(remListCheck)
+    }
     }// end of iterative while
 }
 
@@ -540,7 +543,7 @@ if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
     astNode *declarations=stmts->firstChild->nextSibling;
     idfTable* curPosInParamTable1=iter->localVariable;
     int tempOffset=0;
-    while(strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
+    while(declarations!=NULL && declarations->firstChild!=NULL && declarations->firstChild->tk.lexeme!=NULL && strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
     {
         astNode *declaration=declarations->firstChild;
         //if condition separate and not part of the while loop since if the first variable is global the loop would never work and all the remaining variables would be left out
@@ -639,7 +642,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
 
   // ============================ record handling ==============================================
 
-  if(strcmp(temp->keyword,"<typeDefinition>")==0 )
+  if(temp->keyword!=NULL && strcmp(temp->keyword,"<typeDefinition>")==0 )
   {
     //populate symbol table for global Variables
     recTable* iter = st->rHead;
@@ -763,7 +766,7 @@ void populateGlobalTable(astNode *root,symbolTable* st)
   astNode *temp=root;
 
   // ============================GLOBAL POPULATION==============================================
-  if(strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
+  if(temp->keyword!=NULL && strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
   {
     //populate symbol table for global Variables
     globTable* iter = st->gHead;
