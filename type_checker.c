@@ -38,11 +38,14 @@ int findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *s
       printf("\nLine %d:The variable <%s> is undeclared\n",root->tk.lineNo,root->tk.lexeme);
       return -1;
     }
+
     if(type == 2)
     {
       // handling records
       // TK_ID is a record instance
-      idfTable *localRec = findRecordFields(st,root->tk.lexeme);
+      recTable *rec = findRecord(st,root->tk.lexeme);
+      idfTable *localRec = rec->fields;
+      int recType=rec->recType;
       // if(root->nextSibling->firstChild==NULL || root->nextSibling->firstChild->firstChild==NULL) // Equating records
       // {
       //   int sum=0;
