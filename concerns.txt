@@ -1,0 +1,68 @@
+// Check for multipole definition of same global variable
+
+==DONE==
+An identifier cannot be declared multiple times in the same scope.
+//function
+
+==DibsByAkshit==
+Multiple records with the same name cannot be declared
+
+==DONE==
+An identifier declared globally cannot be declared anywhere else in function definitions.
+//function
+
+Refer to testcase3.txt (semantic test cases) wherein  [b3, c3] c3 is not declared before
+
+==DoingbyAviral==
+An identifier(record type instance) must be declared before its use.
+
+
+==DONE==
+The types and the number of parameters returned by a function must be the same
+as that of the parameters used in invoking the function.
+//function
+
+
+The parameters being returned by a function must be assigned a value.
+If a parameter does not get a value assigned within the function definition, it should be reported as an error.
+//function, redirects to while or if if the assignop stmt is not there in the function
+//while
+//if
+
+
+==DONE== (as a part of the third concern)
+The function that does not return any value, must be invoked appropriately.
+//function
+
+==DONE==
+The types of formal and actual input parameters must be same.
+//function, redirects to while or if if the assignop stmt is not there in the function
+//while
+//if
+
+==DONE==
+Number of actual input parameters must be same as that of formal input parameters.
+//function, redirects to while or if if the assignop stmt is not there in the function
+//while
+//if
+
+==DONE==
+Function overloading is not allowed.
+//check simply in symbol table
+
+==DONE==
+The function cannot be invoked recursively.
+//traverse AST, the subtree of ,say fi, should not contain a subtree of f1
+
+==DoingbyAviral==
+An identifier used beyond its scope must be viewed as undefined
+//Check in the global then travel in ast to find function name and then check all three fields
+
+==DONE==
+A function definition for a function being used (say F1) by another (say F2) must precede the definition of the function using it(i.e. F2).
+//Check for the function f1 into the function table
+
+A while statement must redefine the variable that participates in the iterations. As an instance, consider the following example
+//while
+//find the <var> in rule 75 of new_grammar.txt and check whether any of the them are in the LHS of an assiment stmt in the scope of the while loop
+//while may pass the concern to the if stmt in it

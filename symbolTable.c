@@ -110,6 +110,7 @@ void printRecordTable(symbolTable* st)
   while(rec!=NULL)
   {
     printf("%-10s\n",rec->keyword);
+    printf("%-10d\n",rec->recType);
     idfTable *temp=rec->fields;
     while(temp!=NULL)
     {
@@ -667,6 +668,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
     {
       st->rHead=initRecTable();
       iter=st->rHead;
+      iter->recType=3;
       firstTime=1;
     }
     else
@@ -674,6 +676,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
       while(iter->next!=NULL)
       iter=iter->next;
       iter->next=initRecTable();
+      iter->next->recType=iter->recType+1;
       //tempOffset=iter->offset;// Offset got from previous value
       iter=iter->next;
       firstTime=0;
@@ -962,13 +965,13 @@ int findIdinGlobal(symbolTable *st, char *id) // returns ntype -1 if not found
     return -1;
 
 }
-idfTable *findRecordFields(symbolTable *st, char *rec_name) // returns idfTable within record table
+recTable *findRecord(symbolTable *st, char *rec_name) // returns idfTable within record table
 {
     recTable* temp=st->rHead;
     while(temp!=NULL)
     {
         if(strcmp(temp->keyword,rec_name)==0)
-            return temp->fields;
+            return temp;
 
         temp=temp->next;
     }

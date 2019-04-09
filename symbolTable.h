@@ -44,6 +44,7 @@ struct funTable{
 
 struct recTable{
   char keyword[32];
+  int recType;
   idfTable *fields;
   recTable *next;
 };
@@ -81,5 +82,5 @@ void populateFunctionTable(astNode *root,symbolTable* st);
 funTable *findFunction(symbolTable *st, char *func_name);
 int findIdentifier(idfTable *it, char *id); // returns ntype -1 if not found
 int findIdinGlobal(symbolTable *st, char *id); // returns ntype -1 if not found
-idfTable *findRecordFields(symbolTable *st, char *rec_name);
+recTable *findRecord(symbolTable *st, char *rec_name);
 int typeChecker(astNode *root, symbolTable *st);
