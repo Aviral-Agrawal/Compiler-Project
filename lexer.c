@@ -1043,7 +1043,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     //case 45 handled
                     t->tkType = TK_FUNID;
                     t->lineNo = curLine;
-                    if(curLexeme-1 > MAX_FIELD_LEN)
+                    if(curLexeme-1 > MAX_FUN_LEN)
                         state = 404;
                     else
                     {
@@ -1071,7 +1071,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     //case 45 handled
                     t->tkType = TK_FUNID;
                     t->lineNo = curLine;
-                    if(curLexeme-1 > MAX_FIELD_LEN)
+                    if(curLexeme-1 > MAX_FUN_LEN)
                         state = 404;
                     else
                     {
@@ -1098,7 +1098,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                 {
                     t->tkType = TK_FUNID;
                     t->lineNo = curLine;
-                    if(curLexeme-1 > MAX_FIELD_LEN)
+                    if(curLexeme-1 > MAX_FUN_LEN)
                         state = 404;
                     else
                     {
@@ -1128,7 +1128,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     //case 45 handled
                     t->tkType = TK_FUNID;
                     t->lineNo = curLine;
-                    if(curLexeme-1 > MAX_FIELD_LEN)
+                    if(curLexeme-1 > MAX_FUN_LEN)
                         state = 404;
                     else
                     {
@@ -1184,9 +1184,9 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     }
                     else
                     {
-                        t->tkType = TK_ID;
+                        t->tkType = TK_FIELDID;
                         //insert needs to be done here
-                        ht = insert(t->lexeme,TK_ID, ht);
+                        ht = insert(t->lexeme,TK_FIELDID, ht);
                         return;
                     }
                 }
@@ -1274,17 +1274,17 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     }
                     else
                     {
-                        if(curLexeme-1 > MAX_IDF_LEN)
+                        if(curLexeme-1 > MAX_FIELD_LEN)
                         {
                             state = 404;
-                            t->tkType = TK_ID;
+                            t->tkType = TK_FIELDID;
                             t->lineNo= curLine;
                         }
                         else
                         {
-                            t->tkType = TK_ID;
+                            t->tkType = TK_FIELDID;
                             //insert needs to be done here
-                            ht = insert(t->lexeme,TK_ID, ht);
+                            ht = insert(t->lexeme,TK_FIELDID, ht);
                             return;
                         }
                     }
@@ -1300,7 +1300,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else if(curLexeme > MAX_FIELD_LEN && t->tkType == TK_FIELDID)
@@ -1309,7 +1309,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else if(curLexeme > MAX_FUN_LEN && t->tkType == TK_FUNID)
@@ -1318,7 +1318,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     return;
                 }
                 else
@@ -1326,7 +1326,7 @@ void getNextToken(tokenInfo *t, keyTable* kt, hashTable* ht, FILE* fp, FILE* fp2
                     t->tkType = TK_ERROR;
                     t->lineNo = curLine;
                     t->lexeme[curLexeme++] = '\0';
-                    buffPos--;
+                    buffPos-=2;
                     fprintf(fp2,"Line %-4d: Unknown pattern %s\n",t->lineNo,t->lexeme);
                     return;
                 }
@@ -1354,8 +1354,8 @@ void printTokenInfile(FILE* fp, keyTable* kt, hashTable* ht)
            // printf("<%s>\n", "TK_DOLLAR");//Integrate this in fprintf
             break;
         }
-        printf("<%-20s> Line : %d\n", enumToString(t->tkType), t->lineNo);
-        fprintf(fpout,"<%-20s> Line : %d\n", enumToString(t->tkType), t->lineNo);
+        printf("%10s       %10s         Line : %d\n",t->lexeme, enumToString(t->tkType), t->lineNo);
+        fprintf(fpout,"%10s       %10s        Line : %d\n", t->lexeme, enumToString(t->tkType), t->lineNo);
         free(t);
     }
     fclose(fpout);

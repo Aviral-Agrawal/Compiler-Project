@@ -13,6 +13,30 @@
 #endif
 
 //List (global) initialisation
+char* strcpy1(char* destination, const char* source)
+{
+	// return if no memory is allocated to the destination
+	if (destination == NULL)
+		return NULL;
+
+	// take a pointer pointing to the beginning of destination string
+	char *ptr = destination;
+
+	// copy the C-string pointed by source into the array
+	// pointed by destination
+	while (*source != '\0')
+	{
+		*destination = *source;
+		destination++;
+		source++;
+	}
+
+	// include the terminating null character
+	*destination = '\0';
+
+	// destination is returned by standard strcpy()
+	return ptr;
+}
 int getSetIndex(dict *dt, char *keyword)
 {
   term *cur1=dt->tm;
@@ -106,6 +130,12 @@ ft* getFirst(grammar *gmr, char* keyword)
         temp1->next=NULL;
         return temp1;
     }
+    if(isEpsilon(keyword)){
+      ft *temp1=(ft *)malloc(sizeof(ft));
+      strcpy(temp1->terminal,keyword);
+      temp1->next=NULL;
+      return temp1;
+    }
 
     int i=0;
     for(;i<gmr->ftsa->count;i++){
@@ -114,7 +144,13 @@ ft* getFirst(grammar *gmr, char* keyword)
             return gmr->ftsa->firstSet[i].next;
         }
     }
+    if(strcmp(keyword,"<highPrecedenceOperators>")==0)
+    {
+      strcpy(gmr->ftsa->firstSet[gmr->ftsa->count].terminal,"<highPrecedenceOperators>");
+    }
+    else{
     strcpy(gmr->ftsa->firstSet[gmr->ftsa->count].terminal,keyword);
+    }
     ft *temp=(ft *)malloc(sizeof(ft));
     temp->next=NULL;
     temp->terminal[0] = '\0';
@@ -171,7 +207,7 @@ void insertFirstHelper(grammar *gmr, ruleHead *rh, char *keyword, int flag){
         newElement->next=NULL;
         //Checking if the list is empty for firstSet
         if(start->terminal[0]=='\0')
-            strcpy(start->terminal,rh->nonTermName);
+            strcpy(getFirst(gmr,keyword)->terminal,rh->nonTermName);
         else
         {
           //Flag to check presence of this element in the First
@@ -207,28 +243,28 @@ void insertFirstHelper(grammar *gmr, ruleHead *rh, char *keyword, int flag){
               insertFirstHelper(gmr,rh->next,keyword,1);
             else
             {
-                ft *newElement1=(ft *)malloc(sizeof(ft));
-                strcpy(newElement1->terminal,cur->terminal);
-                newElement1->next=NULL;
+              ft *newElement1=(ft *)malloc(sizeof(ft));
+              strcpy(newElement1->terminal,cur->terminal);
+              newElement1->next=NULL;
 
-                int check = 0;
-                if(start1->terminal[0]=='\0')
-                {
-                    strcpy(start1->terminal,cur->terminal);
-                }
-                else
-                {
-                    while(start1->next!=NULL)
-                    {
-                        if(strcmp(start1->terminal,newElement1->terminal)==0)
-                            check=1;
-                        start1=start1->next;
+              int check = 0;
+              if(start1->terminal[0]=='\0')
+              {
+                  strcpy(start1->terminal,cur->terminal);
+              }
+              else
+              {
+                  while(start1->next!=NULL)
+                  {
+                    if(strcmp(start1->terminal,newElement1->terminal)==0)
+                        check=1;
+                    start1=start1->next;
                     }
                     if(strcmp(start1->terminal,newElement1->terminal)==0)
                         check=1;
-                    if(!check)
-                        start1->next=newElement1;
-                }
+                  if(!check)
+                    start1->next=newElement1;
+              }
             }
             return;
           }
@@ -261,9 +297,10 @@ void insertFirstHelper(grammar *gmr, ruleHead *rh, char *keyword, int flag){
 
 fl* getFollow(grammar *gmr, char* keyword)
 {
-    int n = gmr->flsa->count, i=0;
+
     if(gmr==NULL || gmr->flsa==NULL)
         return NULL;
+    int n = gmr->flsa->count, i=0;
     for(i=0;i<n;i++)
     {
         //Checking if follow exists for this nonTerminal

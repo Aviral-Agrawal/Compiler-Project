@@ -126,6 +126,8 @@ grammar* file_open_one_prod(char file_name[32])
 	int i;
 	r->nonTerm=(ruleHead*)malloc(sizeof(ruleHead)*initial_size);
 	r->tokenCount=(int*)malloc(sizeof(int)*initial_size);
+	r->ftsa=NULL;
+	r->flsa=NULL;
 	char* production;
 	production=(char*)malloc(512);
 

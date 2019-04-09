@@ -46,9 +46,19 @@
 #include "gmrCall.h"
 #endif
 
+#ifndef __AST_H__
+#define __AST_H__
+#include "ast.h"
+#endif
+
+#ifndef __SYMBOL_TABLE_H__
+#define __SYMBOL_TABLE_H__
+#include "symbolTable.h"
+#endif
+
 #include <time.h>
 
-void printSynToken(char* ch, char* ch1);
+treeNode* printSynToken(char* ch, char* ch1);
 void removeComments(char *testcaseFile)
 {
 	FILE* fp = fopen(testcaseFile, "r");
@@ -138,6 +148,8 @@ void optionPrinter(int* t)
 	printf("Enter 2 : For Invoking Lexer Only\n");
 	printf("Enter 3 : For Invoking Lexer and Parser Both\n");
 	printf("Enter 4 : See the Execution Time\n");
+	printf("Enter 5 : print the AST Tree\n");
+	printf("Enter 6 : call semanticAnalyzer and typeChecker\n");
 	scanf("%d",t);
 	// fflush(stdin);
 	// fflush(stdout);
@@ -198,7 +210,7 @@ void printLexToken(char* testcaseFile)
 }
 
 
-void printSynToken(char* ch,char* ch1)
+treeNode* printSynToken(char* ch,char* ch1)
 {
 	removeBar("old_grammar.txt");
 	grammar *r=file_open_one_prod("new_grammar.txt");
@@ -220,11 +232,27 @@ void printSynToken(char* ch,char* ch1)
 	   fclose(fp2);
 	   fclose(fp3);
 
-	return ;
+	return tree;
 }
 
+astNode *printAST(char* outfile, treeNode* p_root)
+{
+	astNode* ast_root = (astNode*) malloc(sizeof(astNode));
+	ast_root->keyword = p_root->keyword;
+	ast_root->tk = p_root->tk;
+	ast_root->parent = NULL;
+	ast_root->nextSibling = NULL;
+	ast_root->firstChild = NULL;
+	createAbstractSyntaxTree(ast_root, p_root);
+	FILE* fpout = fopen(outfile, "w");
+	printASTinFile(ast_root, fpout);
+	fclose(fpout);
+	return ast_root;
+}
+
+
 int main(int argc, char *argv[]) {
-	if(argc!=3)
+	if(argc!=4)
 		{
 			printf("Error: Too few arguments while executing!!\n");
 			return -1;
@@ -240,6 +268,7 @@ int main(int argc, char *argv[]) {
 	printf("7. Error handling in Lexical working but in syntax not tested\n");
 	printf("8. Segmentation fault coming in parser\n\n");
 
+	astNode *ast_root;
     int t;
 	optionPrinter(&t);
     while(t!=0)
@@ -254,7 +283,31 @@ int main(int argc, char *argv[]) {
             printSynToken(argv[1],argv[2]);
         else if(t==4)
             printTime(argv[1],argv[2]);
-		printf("Entered option %d done!!\n",t);
+		else if(t == 5)
+		{
+			treeNode* p_root = printSynToken(argv[1],argv[2]);
+			ast_root = printAST(argv[3], p_root);
+		}
+		else if(t == 6)
+		{
+			treeNode* p_root = printSynToken(argv[1],argv[2]);
+			astNode* ast_root = (astNode*) malloc(sizeof(astNode));
+			ast_root->keyword = p_root->keyword;
+			ast_root->tk = p_root->tk;
+			ast_root->parent = NULL;
+			ast_root->nextSibling = NULL;
+			ast_root->firstChild = NULL;
+			createAbstractSyntaxTree(ast_root, p_root);
+			symbolTable* st = initSymbolTable();
+			populateSymbolTable(ast_root,st);
+			printGlobalTable(st);
+			printf("\n");
+			printRecordTable(st);
+			printf("\n");
+			printFunctionTable(st);
+			typeChecker(ast_root,st);
+		}
+		printf("\nEntered option %d done!!\n",t);
 		optionPrinter(&t);
 		free(BUFF);
     }
