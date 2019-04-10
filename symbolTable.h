@@ -39,6 +39,7 @@ struct funTable{
   idfTable *inputParams;
   idfTable *outputParams;
   idfTable *localVariable;
+  int lineNo;
   funTable *next;
 };
 
@@ -47,6 +48,7 @@ struct recTable{
   int recType;
   idfTable *fields;
   recTable *next;
+  int lineNo;
 };
 
 struct globTable{
@@ -56,14 +58,16 @@ struct globTable{
   int nType;// 0 -NUM 1-RNUM 2-RECORD
   idfTable *extraData;
   globTable *next;//Points to next entry in the global Table
+  int lineNo;
 };
 
 struct idfTable{
   char keyword[32];
   int width;
-  int offset;
+  int offset;//
   int nType;// 0 -NUM 1-RNUM 2-RECORD
-  idfTable *extraData;//Data for While and If Blocks Variables
+  int lineNo;
+  idfTable *extraData;//For Inner Entries of Record like physics, chem , maths as in testcase1
   idfTable *next;//Points to next entry in the function Table
 };
 

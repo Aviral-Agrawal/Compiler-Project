@@ -56,6 +56,11 @@
 #include "symbolTable.h"
 #endif
 
+#ifndef __SEMANTIC_H__
+#define __SEMANTIC_H__
+#include "semantic.h"
+#endif
+
 #include <time.h>
 
 treeNode* printSynToken(char* ch, char* ch1);
@@ -138,7 +143,7 @@ void printTime(char* ch, char* ch1)
     total_CPU_time  =  (double) (end_time - start_time);
     total_CPU_time_in_seconds =   total_CPU_time / CLOCKS_PER_SEC;
     // Print both total_CPU_time and total_CPU_time_in_seconds
-    printf("%lf : TOTAL CPU TIME\n%lf : TOTAL CPU TIME IN SECONDS\n",total_CPU_time,total_CPU_time_in_seconds);
+    printf("%lf : TOTAL CPU TIME\n%lf : TOTAL CPU TIME IN SECONDS\n",total_CPU_time*1000,total_CPU_time_in_seconds*1000);
 }
 
 void optionPrinter(int* t)
@@ -149,7 +154,7 @@ void optionPrinter(int* t)
 	printf("Enter 3 : For Invoking Lexer and Parser Both\n");
 	printf("Enter 4 : See the Execution Time\n");
 	printf("Enter 5 : print the AST Tree\n");
-	printf("Enter 6 : call semanticAnalyzer and typeChecker\n");
+	printf("Enter 6 : Call SemanticAnalyzer and Type Checker\n");
 	scanf("%d",t);
 	// fflush(stdin);
 	// fflush(stdout);
@@ -258,15 +263,7 @@ int main(int argc, char *argv[]) {
 			return -1;
 		}
 	printf("\n%20s*************** CURRENT STATUS OF PROJECT ***************\n","");
-	printf("*\n*\n*\n*\n*\n");
-	printf("1. Lexical module Developed\n");
-	printf("2. FIRST and FOLLOW automated\n");
-	printf("3. Parse TreeConstructed\n");
-	printf("4. Testcase1.txt working fine\n");
-	printf("5. Testcase3.txt working partially.\n");
-	printf("6. Testcase4.txt working partially.\n");
-	printf("7. Error handling in Lexical working but in syntax not tested\n");
-	printf("8. Segmentation fault coming in parser\n\n");
+
 
 	astNode *ast_root;
     int t;
@@ -300,12 +297,13 @@ int main(int argc, char *argv[]) {
 			createAbstractSyntaxTree(ast_root, p_root);
 			symbolTable* st = initSymbolTable();
 			populateSymbolTable(ast_root,st);
-			printGlobalTable(st);
-			printf("\n");
-			printRecordTable(st);
-			printf("\n");
-			printFunctionTable(st);
-			typeChecker(ast_root,st);
+			// printGlobalTable(st);
+			// printf("\n");
+			// printRecordTable(st);
+			// printf("\n");
+			// printFunctionTable(st);
+			// typeChecker(ast_root,st);
+			semanticAnalysis(ast_root,st,"");
 		}
 		printf("\nEntered option %d done!!\n",t);
 		optionPrinter(&t);

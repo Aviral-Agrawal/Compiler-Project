@@ -42,6 +42,7 @@ funTable* initFunTable()
   ft->outputParams= NULL;
   ft->localVariable= NULL;
   ft->next= NULL;
+  ft->lineNo=-1;
   return ft;
 }
 
@@ -49,8 +50,10 @@ recTable* initRecTable( )
 {
   recTable* rt = (recTable*) malloc(sizeof(recTable));
   memset(rt->keyword,'\0',sizeof(rt->keyword));
+  rt->recType=2;
   rt->fields=NULL;
   rt->next=NULL;
+  rt->lineNo=-1;
   return rt;
 }
 
@@ -63,6 +66,7 @@ idfTable* initIdfTable()
   idf->nType=-1;
   idf->extraData=NULL;
   idf->next=NULL;
+  idf->lineNo=-1;
   return idf;
 }
 
@@ -88,7 +92,7 @@ void printGlobalTable(symbolTable* st)
   printf("%c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m\n",27,"KEYWORD",27,27,"WIDTH",27,27,"OFFSET",27,27,"NUM_TYPE",27);
   while(glb!=NULL)
   {
-    printf("%-10s %-10d %-10d ",glb->keyword,glb->width,glb->offset);
+    printf("%-10s %-10d %-10d %-10d",glb->keyword,glb->width,glb->offset,glb->lineNo);
     if(glb->nType==0)
     printf("%-10s\n","INT");
     else if(glb->nType==1)
@@ -109,12 +113,12 @@ void printRecordTable(symbolTable* st)
   printf("%c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m %c[35m%-10s%c[0m\n",27,"KEYWORD",27,27,"WIDTH",27,27,"OFFSET",27,27,"NUM_TYPE",27);
   while(rec!=NULL)
   {
-    printf("%-10s\n",rec->keyword);
-    printf("%-10d\n",rec->recType);
+    printf("name of record is %-10s and type of record is %d and line no is %d \n",rec->keyword,rec->recType,rec->lineNo);
+
     idfTable *temp=rec->fields;
     while(temp!=NULL)
     {
-      printf("%-10s  %-10d  %-10d %-10d\n" , temp->keyword,temp->width,temp->offset,temp->nType);
+      printf("%-10s  %-10d  %-10d %-10d %-10d \n" , temp->keyword,temp->width,temp->offset,temp->nType,temp->lineNo);
       temp=temp->next;
     }
     printf("\n");
@@ -134,13 +138,13 @@ void printFunctionTable(symbolTable* st)
   printf("Function Name : ");
   while(ft!=NULL)
   {
-    printf("Function Name : %10s\n",ft->keyword);
+    printf("Function Name : %10s and the lineNo is %10d\n",ft->keyword,ft->lineNo);
     //Input Parameters
     printf("INPUT PARAMETERS:\n");
     idfTable* idfTemp = ft->inputParams;
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+      printf("%-10s %-10d %-10d %-10d",idfTemp->keyword,idfTemp->width,idfTemp->offset,idfTemp->lineNo);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -155,7 +159,7 @@ void printFunctionTable(symbolTable* st)
     idfTemp = ft->outputParams;
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+        printf("%-10s %-10d %-10d %-10d",idfTemp->keyword,idfTemp->width,idfTemp->offset,idfTemp->lineNo);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -170,7 +174,7 @@ void printFunctionTable(symbolTable* st)
     idfTemp = ft->localVariable;
     while(idfTemp!=NULL)
     {
-      printf("%-10s %-10d %-10d ",idfTemp->keyword,idfTemp->width,idfTemp->offset);
+        printf("%-10s %-10d %-10d %-10d",idfTemp->keyword,idfTemp->width,idfTemp->offset,idfTemp->lineNo);
       if(idfTemp->nType==0)
       printf("%-10s\n","INT");
       else if(idfTemp->nType==1)
@@ -193,12 +197,67 @@ void populateSymbolTable(astNode *root,symbolTable* st)
   populateFunctionTable(root,st);
 }
 
+int findIdentifier(idfTable *it, char *id) // returns ntype -1 if not found
+{
+    idfTable* temp=it;
+    while(temp!=NULL)
+    {
+        if(strcmp(temp->keyword,id)==0)
+            return temp->nType;
+
+        temp=temp->next;
+    }
+    return -1;
+
+}
+
+int findIdinGlobal(symbolTable *st, char *id) // returns ntype -1 if not found
+{
+    globTable* temp=st->gHead;
+    while(temp!=NULL)
+    {
+        if(strcmp(temp->keyword,id)==0)
+            return temp->nType;
+
+        temp=temp->next;
+    }
+    return -1;
+
+}
+recTable *findRecord(symbolTable *st, char *rec_name) // returns idfTable within record table
+{
+    recTable* temp=st->rHead;
+    while(temp!=NULL)
+    {
+        if(strcmp(temp->keyword,rec_name)==0)
+            return temp;
+
+        temp=temp->next;
+    }
+    return NULL;
+
+}
+
+funTable *findFunction(symbolTable *st, char *func_name)//returns table of locak variables
+{
+    funTable* temp=st->fHead;
+    while(temp!=NULL)
+    {
+        if(strcmp(temp->keyword,func_name)==0)
+            return temp;
+
+        temp=temp->next;
+    }
+    return NULL;
+
+}
+
 void populateFunctionTable(astNode *root,symbolTable* st)
 {
   if(root==NULL)
   return;
   astNode *temp=root;
-  if(temp->keyword!=NULL && (strcmp(temp->keyword,"<function>")==0 || strcmp(temp->keyword,"<mainFunction>")==0 ))
+  if((strcmp(temp->keyword,"<function>")==0 ) ||(strcmp(temp->keyword,"<mainFunction>")==0 ) )
   {
 
     funTable* iter = st->fHead;
@@ -227,54 +286,131 @@ void populateFunctionTable(astNode *root,symbolTable* st)
 //==============================INPUT PARAMETERS===================================================
 
     strcpy(iter->keyword,temp->firstChild->tk.lexeme);
+    iter->lineNo=temp->firstChild->tk.lineNo;
     if((strcmp(temp->keyword,"<mainFunction>")!=0 ))
     {
-      astNode *ipar=temp->firstChild->nextSibling;
-      //Logic for going inside now
-      astNode *paraList= ipar->firstChild;
-      while(strcmp(paraList->keyword,"<parameter_list>")!=0)
-      paraList=paraList->nextSibling;
+    astNode *ipar=temp->firstChild->nextSibling;
+    //Logic for going inside now
+    astNode *paraList= ipar->firstChild;
+    while(strcmp(paraList->keyword,"<parameter_list>")!=0)
+    paraList=paraList->nextSibling;
 
-      // Summation for inputParameters width to get offset
+    // Summation for inputParameters width to get offset
 
-      int tempWidthInput = 0;
-      iter->inputParams=initIdfTable();
-      if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+    int tempWidthInput = 0;
+    iter->inputParams=initIdfTable();
+    if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+    {
+      astNode* temp1 = paraList->firstChild->firstChild->firstChild;
+
+      if(temp1->tk.tkType==TK_INT)
+      iter->inputParams->nType=0;
+      else if(temp1->tk.tkType==TK_REAL)
+      iter->inputParams->nType=1;
+
+      iter->inputParams->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
+      strcpy(iter->inputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
+
+      if(iter->inputParams->nType==0)
       {
-        astNode* temp1 = paraList->firstChild->firstChild->firstChild;
+        iter->inputParams->width = NUM_WIDTH;
+        // if(firstTime==1)//Logic just to make the first entry zero
+          iter->inputParams->offset=0;
+        // else
+          // iter->inputParams->offset=tempWidthInput;
+      }
+      else if(iter->inputParams->nType==1)
+      {
+        iter->inputParams->width = RNUM_WIDTH;
+        // if(firstTime==1)//Logic just to make the first entry zero
+          iter->inputParams->offset=0;
+        // else
+          // iter->inputParams->offset=tempWidthInput;
+      }
+      tempWidthInput+=iter->inputParams->width ;
+    }
 
-        if(temp1->tk.tkType==TK_INT)
-        iter->inputParams->nType=0;
-        else if(temp1->tk.tkType==TK_REAL)
-        iter->inputParams->nType=1;
+    else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
+    {
+      astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
+      iter->inputParams->nType=2;
+      iter->inputParams->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
 
-        strcpy(iter->inputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-
-        if(iter->inputParams->nType==0)
+      strcpy(iter->inputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
+      iter->inputParams->extraData=initIdfTable();
+      //traversing the record table to find the size of RECORD
+      recTable *tmp=st->rHead;
+      int tempWidthInputRecord = 0;
+      while(tmp!=NULL)
+      {
+        if(strcmp(tmp->keyword,temp1->tk.lexeme)==0)//matched the record in input list with that in record list in symbol table
         {
-          iter->inputParams->width = NUM_WIDTH;
-          // if(firstTime==1)//Logic just to make the first entry zero
-            iter->inputParams->offset=0;
-          // else
-            // iter->inputParams->offset=tempWidthInput;
+          idfTable *temporary;
+          temporary=tmp->fields;
+          while(temporary->next!=NULL)
+          {
+            tempWidthInputRecord+=temporary->width;
+            temporary=temporary->next;
+          }
+          tempWidthInputRecord+=temporary->width;
+          iter->inputParams->width =tempWidthInputRecord;
+
         }
-        else if(iter->inputParams->nType==1)
-        {
-          iter->inputParams->width = RNUM_WIDTH;
-          // if(firstTime==1)//Logic just to make the first entry zero
-            iter->inputParams->offset=0;
-          // else
-            // iter->inputParams->offset=tempWidthInput;
-        }
-        tempWidthInput+=iter->inputParams->width ;
+        tmp=tmp->next;
       }
 
+      iter->inputParams->offset=0;
+      // update this
+      tempWidthInput+=iter->inputParams->width;
+
+    }
+
+    //Here "tempWidthInputRecord" is the current summation of the offset
+
+    //Now Recusrsing in the <remaining_list>
+    astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
+    if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
+    {
+      iter->inputParams->next = initIdfTable();
+    }
+    idfTable* curPosInParamTable = iter->inputParams->next;
+
+    while(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
+    {
+      paraList=remListCheck->firstChild;
+      if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+      {
+        astNode* temp2 = paraList->firstChild->firstChild->firstChild;
+        astNode* temp1 = paraList->firstChild->nextSibling;
+
+        if(temp2->tk.tkType==TK_INT)
+          curPosInParamTable->nType=0;
+        else if(temp2->tk.tkType==TK_REAL)
+          curPosInParamTable->nType=1;
+          curPosInParamTable->lineNo=temp1->tk.lineNo;
+        strcpy(curPosInParamTable->keyword,temp1->tk.lexeme);
+
+        if(curPosInParamTable->nType==0)
+        {
+          curPosInParamTable->width = NUM_WIDTH;
+          curPosInParamTable->offset=tempWidthInput ;
+        }
+        else if(curPosInParamTable->nType==1)
+        {
+          curPosInParamTable->width = RNUM_WIDTH;
+          curPosInParamTable->offset= tempWidthInput ;
+        }
+        //Offset should be always updated to tell the current position
+        tempWidthInput+=  curPosInParamTable->width;
+      }
       else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
       {
         astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
-        iter->inputParams->nType=2;
-        strcpy(iter->inputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-        iter->inputParams->extraData=initIdfTable();
+        curPosInParamTable->nType=2;
+        curPosInParamTable->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
+
+        strcpy(curPosInParamTable->keyword,paraList->firstChild->nextSibling->tk.lexeme);
+        curPosInParamTable->extraData=initIdfTable();
         //traversing the record table to find the size of RECORD
         recTable *tmp=st->rHead;
         int tempWidthInputRecord = 0;
@@ -290,147 +426,149 @@ void populateFunctionTable(astNode *root,symbolTable* st)
               temporary=temporary->next;
             }
             tempWidthInputRecord+=temporary->width;
-            iter->inputParams->width =tempWidthInputRecord;
+            curPosInParamTable->width =tempWidthInputRecord ;
 
           }
           tmp=tmp->next;
         }
 
-        iter->inputParams->offset=0;
-        // update this
-        tempWidthInput+=iter->inputParams->width;
-
+        curPosInParamTable->offset=tempWidthInput;
+        tempWidthInput+=tempWidthInputRecord;
       }
 
-      //Here "tempWidthInputRecord" is the current summation of the offset
-
-      //Now Recusrsing in the <remaining_list>
-      astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
+      //Forwarding Logic
+      remListCheck=remListCheck->firstChild->firstChild->nextSibling->nextSibling;
       if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
       {
-        iter->inputParams->next = initIdfTable();
+        curPosInParamTable->next = initIdfTable();
+        curPosInParamTable= curPosInParamTable->next;
       }
-      idfTable* curPosInParamTable = iter->inputParams->next;
+      // if(remListCheck)
+    }// end of iterative while
+    //==============================OUTPUT PARAMETERS===================================================
 
-      while(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
+    astNode *opar=temp->firstChild->nextSibling->nextSibling;
+
+if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
       {
-        paraList=remListCheck->firstChild;
-        if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
-        {
-          astNode* temp2 = paraList->firstChild->firstChild->firstChild;
-          astNode* temp1 = paraList->firstChild->nextSibling;
 
-          if(temp2->tk.tkType==TK_INT)
-            curPosInParamTable->nType=0;
-          else if(temp2->tk.tkType==TK_REAL)
-            curPosInParamTable->nType=1;
+    astNode *paraList= opar->firstChild;
+    while(strcmp(paraList->keyword,"<parameter_list>")!=0)
+    paraList=paraList->nextSibling;
 
-          strcpy(curPosInParamTable->keyword,temp1->tk.lexeme);
+    // Summation for inputParameters width to get offset
 
-          if(curPosInParamTable->nType==0)
-          {
-            curPosInParamTable->width = NUM_WIDTH;
-            curPosInParamTable->offset=tempWidthInput ;
-          }
-          else if(curPosInParamTable->nType==1)
-          {
-            curPosInParamTable->width = RNUM_WIDTH;
-            curPosInParamTable->offset= tempWidthInput ;
-          }
-          //Offset should be always updated to tell the current position
-          tempWidthInput+=  curPosInParamTable->width;
-        }
-        else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
-        {
-          astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
-          curPosInParamTable->nType=2;
-          strcpy(curPosInParamTable->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-          curPosInParamTable->extraData=initIdfTable();
-          //traversing the record table to find the size of RECORD
-          recTable *tmp=st->rHead;
-          int tempWidthInputRecord = 0;
-          while(tmp!=NULL)
-          {
-            if(strcmp(tmp->keyword,temp1->tk.lexeme)==0)//matched the record in input list with that in record list in symbol table
-            {
-              idfTable *temporary;
-              temporary=tmp->fields;
-              while(temporary->next!=NULL)
-              {
-                tempWidthInputRecord+=temporary->width;
-                temporary=temporary->next;
-              }
-              tempWidthInputRecord+=temporary->width;
-              curPosInParamTable->width =tempWidthInputRecord ;
+    int tempWidthInput = 0;
+    iter->outputParams=initIdfTable();
+    if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+    {
+      astNode* temp1 = paraList->firstChild->firstChild->firstChild;
 
-            }
-            tmp=tmp->next;
-          }
+      if(temp1->tk.tkType==TK_INT)
+      iter->outputParams->nType=0;
+      else if(temp1->tk.tkType==TK_REAL)
+      iter->outputParams->nType=1;
+      iter->outputParams->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
+      strcpy(iter->outputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
 
-          curPosInParamTable->offset=tempWidthInput;
-          tempWidthInput+=tempWidthInputRecord;
-        }
-
-        //Forwarding Logic
-        remListCheck=remListCheck->firstChild->firstChild->nextSibling->nextSibling;
-        if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
-        {
-          curPosInParamTable->next = initIdfTable();
-          curPosInParamTable= curPosInParamTable->next;
-        }
-        // if(remListCheck)
-      }// end of iterative while
-      //==============================OUTPUT PARAMETERS===================================================
-
-      astNode *opar=temp->firstChild->nextSibling->nextSibling;
-
-  if(strcmp(opar->firstChild->tk.lexeme,"eps")!=0)
-        {
-
-      astNode *paraList= opar->firstChild;
-      while(strcmp(paraList->keyword,"<parameter_list>")!=0)
-      paraList=paraList->nextSibling;
-
-      // Summation for inputParameters width to get offset
-
-      int tempWidthInput = 0;
-      iter->outputParams=initIdfTable();
-      if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+      if(iter->outputParams->nType==0)
       {
-        astNode* temp1 = paraList->firstChild->firstChild->firstChild;
+        iter->outputParams->width = NUM_WIDTH;
+        // if(firstTime==1)//Logic just to make the first entry zero
+          iter->outputParams->offset=0;
+        // else
+          // iter->inputParams->offset=tempWidthInput;
+      }
+      else if(iter->outputParams->nType==1)
+      {
+        iter->outputParams->width = RNUM_WIDTH;
+        // if(firstTime==1)//Logic just to make the first entry zero
+          iter->outputParams->offset=0;
+        // else
+          // iter->inputParams->offset=tempWidthInput;
+      }
+      tempWidthInput+=iter->outputParams->width ;
+    }
 
-        if(temp1->tk.tkType==TK_INT)
-        iter->outputParams->nType=0;
-        else if(temp1->tk.tkType==TK_REAL)
-        iter->outputParams->nType=1;
-
-        strcpy(iter->outputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-
-        if(iter->outputParams->nType==0)
+    else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
+    {
+      astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
+      iter->outputParams->nType=2;
+      iter->outputParams->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
+      strcpy(iter->outputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
+      iter->outputParams->extraData=initIdfTable();
+      //traversing the record table to find the size of RECORD
+      recTable *tmp=st->rHead;
+      int tempWidthInputRecord = 0;
+      while(tmp!=NULL)
+      {
+        if(strcmp(tmp->keyword,temp1->tk.lexeme)==0)//matched the record in input list with that in record list in symbol table
         {
-          iter->outputParams->width = NUM_WIDTH;
-          // if(firstTime==1)//Logic just to make the first entry zero
-            iter->outputParams->offset=0;
-          // else
-            // iter->inputParams->offset=tempWidthInput;
+          idfTable *temporary;
+          temporary=tmp->fields;
+          while(temporary->next!=NULL)
+          {
+            tempWidthInputRecord+=temporary->width;
+            temporary=temporary->next;
+          }
+          tempWidthInputRecord+=temporary->width;
+          iter->outputParams->width =tempWidthInputRecord;
+
         }
-        else if(iter->outputParams->nType==1)
-        {
-          iter->outputParams->width = RNUM_WIDTH;
-          // if(firstTime==1)//Logic just to make the first entry zero
-            iter->outputParams->offset=0;
-          // else
-            // iter->inputParams->offset=tempWidthInput;
-        }
-        tempWidthInput+=iter->outputParams->width ;
+        tmp=tmp->next;
       }
 
-      else   if(paraList->firstChild->firstChild!=NULL && paraList->firstChild->firstChild->keyword!=NULL && strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
+      iter->outputParams->offset=0;
+      // update this
+      tempWidthInput+=iter->outputParams->width;
+
+    }
+
+    //Here "tempWidthInputRecord" is the current summation of the offset
+
+    //Now Recusrsing in the <remaining_list>
+    astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
+    if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
+    {
+      iter->outputParams->next = initIdfTable();
+    }
+    idfTable* curPosInParamTable = iter->outputParams->next;
+
+    while(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
+    {
+      paraList=remListCheck->firstChild;
+      if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
+      {
+        astNode* temp2 = paraList->firstChild->firstChild->firstChild;
+        astNode* temp1 = paraList->firstChild->nextSibling;
+
+        if(temp2->tk.tkType==TK_INT)
+          curPosInParamTable->nType=0;
+        else if(temp2->tk.tkType==TK_REAL)
+          curPosInParamTable->nType=1;
+          curPosInParamTable->lineNo=temp1->tk.lineNo;
+        strcpy(curPosInParamTable->keyword,temp1->tk.lexeme);
+
+        if(curPosInParamTable->nType==0)
+        {
+          curPosInParamTable->width = NUM_WIDTH;
+          curPosInParamTable->offset=tempWidthInput ;
+        }
+        else if(curPosInParamTable->nType==1)
+        {
+          curPosInParamTable->width = RNUM_WIDTH;
+          curPosInParamTable->offset= tempWidthInput ;
+        }
+        //Offset should be always updated to tell the current position
+        tempWidthInput+=  curPosInParamTable->width;
+      }
+      else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
       {
         astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
-        iter->outputParams->nType=2;
-        strcpy(iter->outputParams->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-        iter->outputParams->extraData=initIdfTable();
+        curPosInParamTable->nType=2;
+        curPosInParamTable->lineNo=paraList->firstChild->nextSibling->tk.lineNo;
+        strcpy(curPosInParamTable->keyword,paraList->firstChild->nextSibling->tk.lexeme);
+        curPosInParamTable->extraData=initIdfTable();
         //traversing the record table to find the size of RECORD
         recTable *tmp=st->rHead;
         int tempWidthInputRecord = 0;
@@ -446,100 +584,26 @@ void populateFunctionTable(astNode *root,symbolTable* st)
               temporary=temporary->next;
             }
             tempWidthInputRecord+=temporary->width;
-            iter->outputParams->width =tempWidthInputRecord;
+            curPosInParamTable->width =tempWidthInputRecord ;
 
           }
           tmp=tmp->next;
         }
-
-        iter->outputParams->offset=0;
-        // update this
-        tempWidthInput+=iter->outputParams->width;
-
+        //printf("%d",tempWidthInput);
+        curPosInParamTable->offset=tempWidthInput;
+        tempWidthInput+=tempWidthInputRecord;
       }
 
-      //Here "tempWidthInputRecord" is the current summation of the offset
-
-      //Now Recusrsing in the <remaining_list>
-      if(paraList->firstChild->nextSibling!=NULL && paraList->firstChild->nextSibling->nextSibling!=NULL )
-      {
-      astNode* remListCheck = paraList->firstChild->nextSibling->nextSibling;
+      //Forwarding Logic
+      remListCheck=remListCheck->firstChild->firstChild->nextSibling->nextSibling;
       if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
       {
-        iter->outputParams->next = initIdfTable();
+        curPosInParamTable->next = initIdfTable();
+        curPosInParamTable= curPosInParamTable->next;
       }
-      idfTable* curPosInParamTable = iter->outputParams->next;
-
-      while(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
-      {
-        paraList=remListCheck->firstChild;
-        if(strcmp(paraList->firstChild->firstChild->keyword,"<primitiveDatatype>")==0)
-        {
-          astNode* temp2 = paraList->firstChild->firstChild->firstChild;
-          astNode* temp1 = paraList->firstChild->nextSibling;
-
-          if(temp2->tk.tkType==TK_INT)
-            curPosInParamTable->nType=0;
-          else if(temp2->tk.tkType==TK_REAL)
-            curPosInParamTable->nType=1;
-
-          strcpy(curPosInParamTable->keyword,temp1->tk.lexeme);
-
-          if(curPosInParamTable->nType==0)
-          {
-            curPosInParamTable->width = NUM_WIDTH;
-            curPosInParamTable->offset=tempWidthInput ;
-          }
-          else if(curPosInParamTable->nType==1)
-          {
-            curPosInParamTable->width = RNUM_WIDTH;
-            curPosInParamTable->offset= tempWidthInput ;
-          }
-          //Offset should be always updated to tell the current position
-          tempWidthInput+=  curPosInParamTable->width;
-        }
-        else   if(strcmp(paraList->firstChild->firstChild->keyword,"<constructedDatatype>")==0)
-        {
-          astNode* temp1 = paraList->firstChild->firstChild->firstChild->nextSibling;
-          curPosInParamTable->nType=2;
-          strcpy(curPosInParamTable->keyword,paraList->firstChild->nextSibling->tk.lexeme);
-          curPosInParamTable->extraData=initIdfTable();
-          //traversing the record table to find the size of RECORD
-          recTable *tmp=st->rHead;
-          int tempWidthInputRecord = 0;
-          while(tmp!=NULL)
-          {
-            if(strcmp(tmp->keyword,temp1->tk.lexeme)==0)//matched the record in input list with that in record list in symbol table
-            {
-              idfTable *temporary;
-              temporary=tmp->fields;
-              while(temporary->next!=NULL)
-              {
-                tempWidthInputRecord+=temporary->width;
-                temporary=temporary->next;
-              }
-              tempWidthInputRecord+=temporary->width;
-              curPosInParamTable->width =tempWidthInputRecord ;
-
-            }
-            tmp=tmp->next;
-          }
-          //printf("%d",tempWidthInput);
-          curPosInParamTable->offset=tempWidthInput;
-          tempWidthInput+=tempWidthInputRecord;
-        }
-
-        //Forwarding Logic
-        remListCheck=remListCheck->firstChild->firstChild->nextSibling->nextSibling;
-        if(strcmp(remListCheck->firstChild->tk.lexeme,"eps")!=0)
-        {
-          curPosInParamTable->next = initIdfTable();
-          curPosInParamTable= curPosInParamTable->next;
-        }
-        // if(remListCheck)
-      }
-      }// end of iterative while
-  }
+      // if(remListCheck)
+    }// end of iterative while
+}
 }
    //i want local variables  node
    astNode *stmts=NULL;
@@ -552,12 +616,11 @@ void populateFunctionTable(astNode *root,symbolTable* st)
        stmts=temp->firstChild->nextSibling;
 
    }
-    if(stmts!=NULL && stmts->firstChild!=NULL)
-    {
+
     astNode *declarations=stmts->firstChild->nextSibling;
     idfTable* curPosInParamTable1=iter->localVariable;
     int tempOffset=0;
-    while(declarations!=NULL && declarations->firstChild!=NULL && declarations->firstChild->tk.lexeme!=NULL && strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
+    while(strcmp(declarations->firstChild->tk.lexeme,"eps")!=0   )//second condotion to check not global var
     {
         astNode *declaration=declarations->firstChild;
         //if condition separate and not part of the while loop since if the first variable is global the loop would never work and all the remaining variables would be left out
@@ -593,6 +656,7 @@ void populateFunctionTable(astNode *root,symbolTable* st)
                    curPosInParamTable1->width = RNUM_WIDTH;
                       curPosInParamTable1->offset=tempOffset;
                }
+               curPosInParamTable1->lineNo=declaration->firstChild->nextSibling->nextSibling->tk.lineNo;
                strcpy(curPosInParamTable1->keyword,declaration->firstChild->nextSibling->nextSibling->tk.lexeme);
                tempOffset+=curPosInParamTable1->width ;
         }
@@ -600,6 +664,8 @@ void populateFunctionTable(astNode *root,symbolTable* st)
                {
                astNode* temp1 = declaration->firstChild->nextSibling->firstChild->firstChild->nextSibling;
               curPosInParamTable1->nType=2;
+              curPosInParamTable1->lineNo=declaration->firstChild->nextSibling->nextSibling->tk.lineNo;
+
                strcpy(curPosInParamTable1->keyword,declaration->firstChild->nextSibling->nextSibling->tk.lexeme);
                curPosInParamTable1->extraData=initIdfTable();
                //traversing the record table to find the size of RECORD
@@ -626,8 +692,9 @@ void populateFunctionTable(astNode *root,symbolTable* st)
                }
                declarations=declaration->nextSibling;
           }
-        }
 }
+
+
 
   //Traversing Children
   if(root->firstChild!=NULL)
@@ -657,7 +724,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
 
   // ============================ record handling ==============================================
 
-  if(temp->keyword!=NULL && strcmp(temp->keyword,"<typeDefinition>")==0 )
+  if(strcmp(temp->keyword,"<typeDefinition>")==0 )
   {
     //populate symbol table for global Variables
     recTable* iter = st->rHead;
@@ -668,20 +735,21 @@ void populateRecordTable(astNode *root,symbolTable* st)
     {
       st->rHead=initRecTable();
       iter=st->rHead;
-      iter->recType=3;
       firstTime=1;
+      iter->recType=3;
     }
     else
     {
       while(iter->next!=NULL)
       iter=iter->next;
+
       iter->next=initRecTable();
-      iter->next->recType=iter->recType+1;
       //tempOffset=iter->offset;// Offset got from previous value
+      iter->next->recType=iter->recType+1;
       iter=iter->next;
       firstTime=0;
     }
-
+    iter->lineNo=temp->firstChild->nextSibling->tk.lineNo;
     strcpy(iter->keyword,temp->firstChild->nextSibling->tk.lexeme);
     iter->fields=initIdfTable();
     astNode *recordFields = temp->firstChild;
@@ -694,12 +762,15 @@ void populateRecordTable(astNode *root,symbolTable* st)
       iter->fields->nType=0;
       iter->fields->width=NUM_WIDTH;
       iter->fields->offset=0;
+      iter->fields->lineNo=temp2->firstChild->tk.lineNo;
     }
     else if(temp2->firstChild->tk.tkType==TK_REAL)
     {
       iter->fields->nType=1;
       iter->fields->width=RNUM_WIDTH;
       iter->fields->offset=0;
+      iter->fields->lineNo=temp2->firstChild->tk.lineNo;
+
     }
     int tempOffset1=iter->fields->width;
     strcpy( iter->fields->keyword,temp2->nextSibling->tk.lexeme);
@@ -713,12 +784,16 @@ void populateRecordTable(astNode *root,symbolTable* st)
       nextemp->nType=0;
       nextemp->width=NUM_WIDTH;
       nextemp->offset=tempOffset1;
+      nextemp->lineNo=temp3->firstChild->tk.lineNo;
+
     }
     else if(temp3->firstChild->tk.tkType==TK_REAL)
     {
       nextemp->nType=1;
       nextemp->width=RNUM_WIDTH;
       nextemp->offset=tempOffset1;
+      nextemp->lineNo=temp3->firstChild->tk.lineNo;
+
     }
     tempOffset1=nextemp->offset + nextemp->width ;
     strcpy(nextemp->keyword,temp3->nextSibling->tk.lexeme);
@@ -737,13 +812,17 @@ void populateRecordTable(astNode *root,symbolTable* st)
         nextemp->nType=0;
         nextemp->width=NUM_WIDTH;
         nextemp->offset=tempOffset1;
+
       }
       else if(temp3->firstChild->tk.tkType==TK_REAL)
       {
         nextemp->nType=1;
         nextemp->width=RNUM_WIDTH;
         nextemp->offset=tempOffset1;
+
       }
+      nextemp->lineNo=temp3->firstChild->tk.lineNo;
+
       tempOffset1=(nextemp->offset) + (nextemp->width );
       strcpy(nextemp->keyword,temp3->nextSibling->tk.lexeme);
 
@@ -772,6 +851,7 @@ void populateRecordTable(astNode *root,symbolTable* st)
 
 }
 
+
 void populateGlobalTable(astNode *root,symbolTable* st)
 {
   //Pre-Order Traversal
@@ -783,7 +863,7 @@ void populateGlobalTable(astNode *root,symbolTable* st)
   astNode *temp=root;
 
   // ============================GLOBAL POPULATION==============================================
-  if(temp->keyword!=NULL && strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
+  if(strcmp(temp->keyword,"<declaration>")==0 && strcmp(temp->firstChild->nextSibling->nextSibling->nextSibling->firstChild->tk.lexeme,"eps")!=0)
   {
     //populate symbol table for global Variables
     globTable* iter = st->gHead;
@@ -849,6 +929,7 @@ void populateGlobalTable(astNode *root,symbolTable* st)
         else if(tIntGetter->tk.tkType==TK_REAL)
         iter->nType=1;
 
+        iter->lineNo=temp1->tk.lineNo;
         strcpy(iter->keyword,temp1->tk.lexeme);
 
         if(iter->nType==0)
@@ -876,6 +957,8 @@ void populateGlobalTable(astNode *root,symbolTable* st)
         astNode* temp2 = temp->firstChild->nextSibling->nextSibling;
         temp1 = temp->firstChild->nextSibling->firstChild->firstChild->nextSibling;
         iter->nType=2;
+        iter->lineNo=temp2->tk.lineNo;
+
         strcpy(iter->keyword,temp2->tk.lexeme);
         iter->extraData=initIdfTable();
         //traversing the record table to find the size of RECORD
@@ -924,57 +1007,4 @@ void populateGlobalTable(astNode *root,symbolTable* st)
       temp=temp->nextSibling;
     }
   }
-}
-
-funTable *findFunction(symbolTable *st, char *func_name)//returns table of locak variables
-{
-    funTable* temp=st->fHead;
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->keyword,func_name)==0)
-            return temp;
-
-        temp=temp->next;
-    }
-    return NULL;
-
-}
-int findIdentifier(idfTable *it, char *id) // returns ntype -1 if not found
-{
-    idfTable* temp=it;
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->keyword,id)==0)
-            return temp->nType;
-
-        temp=temp->next;
-    }
-    return -1;
-
-}
-int findIdinGlobal(symbolTable *st, char *id) // returns ntype -1 if not found
-{
-    globTable* temp=st->gHead;
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->keyword,id)==0)
-            return temp->nType;
-
-        temp=temp->next;
-    }
-    return -1;
-
-}
-recTable *findRecord(symbolTable *st, char *rec_name) // returns idfTable within record table
-{
-    recTable* temp=st->rHead;
-    while(temp!=NULL)
-    {
-        if(strcmp(temp->keyword,rec_name)==0)
-            return temp;
-
-        temp=temp->next;
-    }
-    return NULL;
-
 }

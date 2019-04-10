@@ -1,17 +1,11 @@
-compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o driver.o
-	gcc -g -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o driver.o
-
-compileLexer : lexer.o
-	gcc -g -o lexerexe lexer.o
+compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o semantic.o driver.o
+	gcc -g -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o semantic.o driver.o
 
 compileLexer : lexer.o
 	gcc -g -o lexerexe lexer.o
 
 run :
 	./stage1exe
-
-remove :
-	rm *.o *.gch exe
 
 debug :
 	gdb stage1exe
@@ -42,6 +36,10 @@ symbolTable.o: symbolTable.h symbolTable.c
 
 type_checker.o: symbolTable.h type_checker.c
 	gcc -g -c symbolTable.h type_checker.c
+
+semantic.o: semantic.h semantic.c
+	gcc -g -c semantic.h semantic.c
+
 driver.o: driver.c
 	gcc -g -c driver.c
 
