@@ -71,6 +71,12 @@ struct idfTable{
   idfTable *next;//Points to next entry in the function Table
 };
 
+struct storeLeafType{
+  int type;
+  astNode *leaf;
+};
+typedef struct storeLeafType storeLeafType;
+
 symbolTable* initSymbolTable();
 funTable* initFunTable();
 recTable* initRecTable( );
@@ -87,4 +93,6 @@ funTable *findFunction(symbolTable *st, char *func_name);
 int findIdentifier(idfTable *it, char *id); // returns ntype -1 if not found
 int findIdinGlobal(symbolTable *st, char *id); // returns ntype -1 if not found
 recTable *findRecord(symbolTable *st, char *rec_name);
+idfTable* findRecordFields(symbolTable *st,int type);
 int typeChecker(astNode *root, symbolTable *st);
+void codeGen(astNode *ast_root, symbolTable *st, FILE *output);

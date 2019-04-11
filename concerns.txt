@@ -1,3 +1,9 @@
+//Print the AST using an AST prune function which prints a highly pruned AST and not
+//the one we are using in the code
+
+//Check the testcases when no input parameters are passed or the same
+//for the output parameters.
+
 // Check for multipole definition of same global variable
 ==DONE==
 

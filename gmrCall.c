@@ -149,8 +149,8 @@ grammar* file_open_one_prod(char file_name[32])
 
      }
 	int no_rules;
-	printf("the number of rules are %d \n",c);
-	printf("the value of size variable that is the maximum number of productions it can hold at this point of time is %d \n",initial_size);
+	// printf("the number of rules are %d \n",c);
+	// printf("the value of size variable that is the maximum number of productions it can hold at this point of time is %d \n",initial_size);
 	no_rules=c;
 	r->prodCount=no_rules;
 	//  calculateFirstSet(r);

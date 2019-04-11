@@ -1,14 +1,5 @@
-compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o semantic.o driver.o
-	gcc -g -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o semantic.o driver.o
-
-compileLexer : lexer.o
-	gcc -g -o lexerexe lexer.o
-
-run :
-	./stage1exe
-
-debug :
-	gdb stage1exe
+compileAll : lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o dbg_semantic.o codeGenerator.o driver.o
+	gcc -g -o stage1exe lexer.o syn.o gmrCall.o nAry.o parseStack.o parse.o ast.o symbolTable.o type_checker.o dbg_semantic.o codeGenerator.o driver.o
 
 lexer.o: lexerDef.h lexer.h lexer.c
 	gcc -g -c lexerDef.h lexer.h lexer.c
@@ -37,8 +28,11 @@ symbolTable.o: symbolTable.h symbolTable.c
 type_checker.o: symbolTable.h type_checker.c
 	gcc -g -c symbolTable.h type_checker.c
 
-semantic.o: semantic.h semantic.c
-	gcc -g -c semantic.h semantic.c
+dbg_semantic.o: semantic.h dbg_semantic.c
+	gcc -g -c semantic.h dbg_semantic.c
+
+codeGenerator.o: symbolTable.h codeGenerator.c
+	gcc -g -c symbolTable.h codeGenerator.c
 
 driver.o: driver.c
 	gcc -g -c driver.c

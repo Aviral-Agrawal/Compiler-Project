@@ -255,9 +255,15 @@ astNode *printAST(char* outfile, treeNode* p_root)
 	return ast_root;
 }
 
+void printCodeinFile(astNode *ast_root,symbolTable *st, char *file)
+{
+	FILE *out = fopen(file,"w");
+	codeGen(ast_root,st,out);
+	fclose(out);
+}
 
 int main(int argc, char *argv[]) {
-	if(argc!=4)
+	if(argc!=5)
 		{
 			printf("Error: Too few arguments while executing!!\n");
 			return -1;
@@ -297,13 +303,15 @@ int main(int argc, char *argv[]) {
 			createAbstractSyntaxTree(ast_root, p_root);
 			symbolTable* st = initSymbolTable();
 			populateSymbolTable(ast_root,st);
-			// printGlobalTable(st);
-			// printf("\n");
-			// printRecordTable(st);
-			// printf("\n");
-			// printFunctionTable(st);
-			// typeChecker(ast_root,st);
-			semanticAnalysis(ast_root,st,"");
+			printGlobalTable(st);
+			printf("\n");
+			printRecordTable(st);
+			printf("\n");
+			printFunctionTable(st);
+			printf("\n");
+			typeChecker(ast_root,st);
+			// semanticAnalysis(ast_root,st,"");
+			// printCodeinFile(ast_root, st, argv[4]);
 		}
 		printf("\nEntered option %d done!!\n",t);
 		optionPrinter(&t);
