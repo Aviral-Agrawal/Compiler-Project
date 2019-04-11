@@ -52,7 +52,6 @@ recTable *temp=st->rHead;
 while(temp!=NULL)
 {
 if(temp->recType == type)
-return temp->fields;
 
 temp=temp->next;
 }

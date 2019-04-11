@@ -18,9 +18,7 @@ char *typeToString(int type)
     sprintf(test,"%d",type);
     strcpy(key,"record type");
     strcat(key,test);
-   }
     return key;
-    
 }
 storeLeafType *findArithmeticExpressionType(astNode *root, funTable *funPtr, symbolTable *st, astNode *leaf)
 {

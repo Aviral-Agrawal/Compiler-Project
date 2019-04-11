@@ -23,7 +23,7 @@ _main
 		type int: chemistry;
 	endrecord;
 
-	record #mark1
+	record #mark
 		type real : maths;
 		type real: physics;
 		type real: chemistry;

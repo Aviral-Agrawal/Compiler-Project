@@ -35,8 +35,7 @@
 <stmt>==><ioStmt>
 <stmt>==> <funCallStmt>
 <assignmentStmt>===><singleOrRecId> TK_ASSIGNOP <arithmeticExpression> TK_SEM
-<singleOrRecId>===>TK_ID 
-<singleOrRecId>==> TK_ID TK_DOT  TK_FIELDID
+<singleOrRecId>===>TK_ID
 <singleOrRecId>===>TK_ID <new_24>
 <new_24> ===> eps 
 <new_24>==> TK_DOT TK_FIELDID
@@ -67,10 +66,8 @@
 <all>===> TK_ID <B>
 <all>==> TK_NUM
 <all>==> TK_RNUM
-<B>===> <temp>
-<B>==>eps
-<temp>===> eps 
-<temp>==> TK_DOT TK_FIELDID
+<B>===> TK_DOT TK_FIELDID 
+<B>==> eps
 <booleanExpression>===>TK_OP <booleanExpression> TK_CL <logicalOp> TK_OP <booleanExpression> TK_CL
 <booleanExpression>===>  <var> <relationalOp> <var>
 <booleanExpression>===> TK_NOT TK_OP <booleanExpression>TK_CL

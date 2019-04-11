@@ -149,7 +149,7 @@ void optionPrinter(int* t)
 	printf("Enter 3 : For Invoking Lexer and Parser Both\n");
 	printf("Enter 4 : See the Execution Time\n");
 	printf("Enter 5 : print the AST Tree\n");
-	printf("Enter 6 : call semanticAnalyzer and typeChecker\n");
+	printf("Enter 6 : call semanticAnalyzer and typeChecker and codeGen\n");
 	scanf("%d",t);
 	// fflush(stdin);
 	// fflush(stdout);
@@ -249,10 +249,15 @@ astNode *printAST(char* outfile, treeNode* p_root)
 	fclose(fpout);
 	return ast_root;
 }
-
+void printCodeinFile(astNode *ast_root,symbolTable *st, char *file)
+{
+	FILE *out = fopen(file,"w");
+	codeGen(ast_root,st,out);
+	fclose(out);
+}
 
 int main(int argc, char *argv[]) {
-	if(argc!=4)
+	if(argc!=5)
 		{
 			printf("Error: Too few arguments while executing!!\n");
 			return -1;
@@ -306,6 +311,7 @@ int main(int argc, char *argv[]) {
 			printf("\n");
 			printFunctionTable(st);
 			typeChecker(ast_root,st);
+			printCodeinFile(ast_root, st, argv[4]);
 		}
 		printf("\nEntered option %d done!!\n",t);
 		optionPrinter(&t);
